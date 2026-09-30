@@ -1,0 +1,203 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{ynt/global//global/global/global}
+    \entry{geometry}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=26026464e1228b6ddd45a64b0ae656ca}{%
+           family={Oliveira},
+           familyi={O\bibinitperiod},
+           given={Julia\bibnamedelimb Bennell;\bibnamedelima José},
+           giveni={J\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \strng{namehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{fullhash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{fullhashraw}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{bibnamehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authorbibnamehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authornamehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authorfullhash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authorfullhashraw}{26026464e1228b6ddd45a64b0ae656ca}
+      \field{extraname}{1}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{European Journal of Operational Research}
+      \field{number}{2}
+      \field{title}{The geometry of nesting problems: A tutorial}
+      \field{volume}{184}
+      \field{year}{2008}
+      \field{pages}{397\bibrangedash 415}
+      \range{pages}{19}
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/S0377221706012379
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/S0377221706012379
+      \endverb
+    \endentry
+    \entry{irregular}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=26026464e1228b6ddd45a64b0ae656ca}{%
+           family={Oliveira},
+           familyi={O\bibinitperiod},
+           given={Julia\bibnamedelimb Bennell;\bibnamedelima José},
+           giveni={J\bibinitperiod\bibinitdelim B\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor & Francis}%
+      }
+      \strng{namehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{fullhash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{fullhashraw}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{bibnamehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authorbibnamehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authornamehash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authorfullhash}{26026464e1228b6ddd45a64b0ae656ca}
+      \strng{authorfullhashraw}{26026464e1228b6ddd45a64b0ae656ca}
+      \field{extraname}{2}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{Journal of the Operational Research Society}
+      \field{number}{sup1}
+      \field{title}{A tutorial in irregular shape packing problems}
+      \field{volume}{60}
+      \field{year}{2009}
+      \field{pages}{S93\bibrangedash S105}
+      \range{pages}{-1}
+      \verb{urlraw}
+      \verb https://doi.org/10.1057/jors.2008.169
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1057/jors.2008.169
+      \endverb
+    \endentry
+    \entry{arenales}{book}{}{}
+      \name{author}{1}{}{%
+        {{hash=2baf216602f8eed69e25840ae6a6a5bd}{%
+           family={Armentano},
+           familyi={A\bibinitperiod},
+           given={Horacio\bibnamedelimb Yanasse;\bibnamedelimb Marcus\bibnamedelimb Arenales;\bibnamedelimb Reinaldo\bibnamedelimb Morabito;\bibnamedelima Vinícius},
+           giveni={H\bibinitperiod\bibinitdelim Y\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim A\bibinitperiod\bibinitdelim R\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim V\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Elsevier Brasil}%
+      }
+      \strng{namehash}{2baf216602f8eed69e25840ae6a6a5bd}
+      \strng{fullhash}{2baf216602f8eed69e25840ae6a6a5bd}
+      \strng{fullhashraw}{2baf216602f8eed69e25840ae6a6a5bd}
+      \strng{bibnamehash}{2baf216602f8eed69e25840ae6a6a5bd}
+      \strng{authorbibnamehash}{2baf216602f8eed69e25840ae6a6a5bd}
+      \strng{authornamehash}{2baf216602f8eed69e25840ae6a6a5bd}
+      \strng{authorfullhash}{2baf216602f8eed69e25840ae6a6a5bd}
+      \strng{authorfullhashraw}{2baf216602f8eed69e25840ae6a6a5bd}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{isbn}{9788535281835}
+      \field{title}{Pesquisa Operacional: Para cursos de engenharia}
+      \field{year}{2015}
+      \verb{urlraw}
+      \verb https://books.google.com.br/books?id=aZbpCgAAQBAJ
+      \endverb
+      \verb{url}
+      \verb https://books.google.com.br/books?id=aZbpCgAAQBAJ
+      \endverb
+    \endentry
+    \entry{key}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=e0aa355a140407c93f0e0a4f698f49e3}{%
+           family={Alves},
+           familyi={A\bibinitperiod},
+           given={Leandro\bibnamedelimb Mundim;\bibnamedelimb Marina\bibnamedelimb Andretta;\bibnamedelima Thiago},
+           giveni={L\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim A\bibinitperiod\bibinitdelim T\bibinitperiod}}}%
+      }
+      \strng{namehash}{e0aa355a140407c93f0e0a4f698f49e3}
+      \strng{fullhash}{e0aa355a140407c93f0e0a4f698f49e3}
+      \strng{fullhashraw}{e0aa355a140407c93f0e0a4f698f49e3}
+      \strng{bibnamehash}{e0aa355a140407c93f0e0a4f698f49e3}
+      \strng{authorbibnamehash}{e0aa355a140407c93f0e0a4f698f49e3}
+      \strng{authornamehash}{e0aa355a140407c93f0e0a4f698f49e3}
+      \strng{authorfullhash}{e0aa355a140407c93f0e0a4f698f49e3}
+      \strng{authorfullhashraw}{e0aa355a140407c93f0e0a4f698f49e3}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{issn}{0957-4174}
+      \field{journaltitle}{Expert Systems with Applications}
+      \field{title}{A biased random key genetic algorithm for open dimension nesting problems using no-fit raster}
+      \field{volume}{81}
+      \field{year}{2017}
+      \field{pages}{358\bibrangedash 371}
+      \range{pages}{14}
+      \verb{urlraw}
+      \verb https://www.sciencedirect.com/science/article/pii/S0957417417302233
+      \endverb
+      \verb{url}
+      \verb https://www.sciencedirect.com/science/article/pii/S0957417417302233
+      \endverb
+    \endentry
+    \entry{containers}{article}{}{}
+      \name{author}{1}{}{%
+        {{hash=214404429cac9147d1dd26bfbfbe9934}{%
+           family={Oliveira},
+           familyi={O\bibinitperiod},
+           given={Leandro\bibnamedelimb Mundim;\bibnamedelimb Marina\bibnamedelimb Andretta;\bibnamedelimb Maria\bibnamedelimb Carravilla;\bibnamedelima José},
+           giveni={L\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim A\bibinitperiod\bibinitdelim M\bibinitperiod\bibinitdelim C\bibinitperiod\bibinitdelim J\bibinitperiod}}}%
+      }
+      \list{publisher}{1}{%
+        {Taylor \& Francis}%
+      }
+      \strng{namehash}{214404429cac9147d1dd26bfbfbe9934}
+      \strng{fullhash}{214404429cac9147d1dd26bfbfbe9934}
+      \strng{fullhashraw}{214404429cac9147d1dd26bfbfbe9934}
+      \strng{bibnamehash}{214404429cac9147d1dd26bfbfbe9934}
+      \strng{authorbibnamehash}{214404429cac9147d1dd26bfbfbe9934}
+      \strng{authornamehash}{214404429cac9147d1dd26bfbfbe9934}
+      \strng{authorfullhash}{214404429cac9147d1dd26bfbfbe9934}
+      \strng{authorfullhashraw}{214404429cac9147d1dd26bfbfbe9934}
+      \field{extraname}{3}
+      \field{sortinit}{2}
+      \field{sortinithash}{8b555b3791beccb63322c22f3320aa9a}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{journaltitle}{International Journal of Production Research}
+      \field{number}{1-2}
+      \field{title}{A general heuristic for two-dimensional nesting problems with limited-size containers}
+      \field{volume}{56}
+      \field{year}{2018}
+      \field{pages}{709\bibrangedash 732}
+      \range{pages}{24}
+      \verb{urlraw}
+      \verb https://doi.org/10.1080/00207543.2017.1394598
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1080/00207543.2017.1394598
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+
