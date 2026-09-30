@@ -1,0 +1,12 @@
+## Arquivos auxiliares e temporários que o LaTeX gera
+*.aux
+*.bcf
+*.log
+*.run.xml
+*.toc
+*.out
+*.blg
+*.bbl
+*.synctex.gz
+*.fdb_latexmk
+*.fls
