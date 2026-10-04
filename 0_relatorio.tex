@@ -1,9 +1,10 @@
-\documentclass{article}
+% \documentclass[12pt, openright, twoside, a4paper, english, brazil]{USPSC-classe/USPSC}
+\documentclass[12pt, a4paper]{report}
+\usepackage[english, brazilian]{babel}
 \usepackage{graphicx} % Required for inserting images
 \usepackage[utf8]{inputenc} % Para caracteres especiais
 \usepackage[dvipsnames]{xcolor}
-\usepackage[brazilian]{babel} % Para nomes de sessões e teoremas e etc em pt
-\usepackage{amsmath, amsthm, amssymb} % Algumas funcionalidades matemáticas????
+\usepackage{amsmath, amsthm, amssymb}
 \usepackage{csquotes}
 \usepackage[table]{xcolor}
 \usepackage{float}
@@ -11,20 +12,13 @@
 \usepackage{comment}
 \usepackage{tikz}
 \usepackage{url}
+\usepackage{verbatim}
 \usepackage{booktabs, multirow} % for borders and merged ranges
 \usepackage{changepage,threeparttable} % for wide tables
 %\usepackage{lscape}
 \usepackage{pdflscape}
 \usepackage{caption, subcaption}
-\usepackage{geometry}
-\geometry{
- a4paper
- }
-\usepackage[
-backend=biber,
-sorting=ynt
-]{biblatex}
-%\usepackage{geometry}[left=4cm,right=4cm]
+\usepackage[alf, abnt-emphasize=bf]{abntex2cite}
 
 
 
@@ -56,20 +50,50 @@ sorting=ynt
 \newcommand{\corV}{SkyBlue}
 \newcommand{\corW}{Thistle}
 
+\begin{comment}
 \addbibresource{bib.bib}
 
-\title{Implementação e comparação entre métodos heurísticos para a
+\instituicao{Universidade de São Paulo \\ Instituto de Ciências Matemáticas e de Computação}
+
+\titulo{Implementação e comparação entre métodos heurísticos para a
 resolução do problema de corte de itens irregulares em faixa}
-\author{Bolsista: Nina  Cunha Pinheiro\\ Orientadora: Marina Andretta}
-\date{\today}
+
+\autor{Nina Cunha Pinheiro}
+
+\orientador{Prof\textsuperscript{a}. Dr\textsuperscript{a}. Marina Andretta}
+
+\preambulo{Monografia apresentada ao Instituto de Ciências Matemáticas e de Computação...}
+
+\local{São Carlos}
+
+\data{2026}
+
 
 \begin{document}
+
+\imprimircapa
+
+\imprimirfolhaderosto
 
 \maketitle
 
 \begin{center}
-Relatório final relativo ao período de setembro de 2024 a agosto de 2025, referente ao projeto de iniciação científica do Programa Unificado de Bolsas vigente no mesmo período.
+TCC relativo ao período de setembro de 2024 a agosto de 2025, referente ao projeto de iniciação científica do Programa Unificado de Bolsas vigente no mesmo período.
 \end{center}
+
+\textcolor{red}{alterar parte de relatório final para TCC}
+
+\textual
+\end{comment}
+
+
+
+\begin{document}
+
+\title{Implementação e comparação entre métodos heurísticos}
+\author{Nina Cunha Pinheiro}
+\maketitle
+
 
 \section{Introdução}
 
@@ -79,6 +103,8 @@ Otimização é uma área da matemática que busca resolver problemas de alta co
 Problemas de corte e empacotamento são problemas otimização que buscam encaixar itens em um dado recipiente, de forma a minimizar desperdício de espaço a ser ocupado. Eles podem ser aplicações de problemas da vida real como corte de tecidos na indústria têxtil, corte de itens na automobilística, na indústria de calçados e até na disposição de itens em um contêiner para transporte. 
 
 Nesse trabalho estudamos o problema de corte de itens irregulares em faixa, que consiste em posicionar itens irregulares em uma faixa, sem sobreposição, de forma a minimizar o comprimento usado da faixa. Estudamos também ferramentas para resolver esse problema, como NFPs, IFPs, a heurística construtiva {\it Bottom-Left} e a meta-heurística {\it BRKGA}.
+
+\textcolor{red}{adicionar referências de trabalhos relacionados}
 
 Na Seção~\ref{sec:irregular} mostramos o problema de corte de itens irregulares em faixa e explicamos principalmente as ferramentas utilizadas para garantir que os itens não se sobreponham e permaneçam no interior da faixa. Na Seção~\ref{sec:BL} detalhamos a heurística construtiva {\it Bottom-Left} implementada para resolvermos o problema apresentado na Seção~\ref{sec:irregular}, juntamente com alguns resultados de seus testes na Seção~\ref{sec:experimentosbl}. Na Seção~\ref{sec:BRKGA} detalhamos o funcionamento e implementação da meta-heurística {\it BRKGA} para a resolução do mesmo problema e analisamos os resultados obtidos na Seção~\ref{sec:experimentosBRKGA}. Na Seção~\ref{sec:comp}, comparamos os resultados dos experimentos numéricos de ambas as heurísticas e por fim, na Seção~\ref{sec:cons_finais}, apontamos as considerações finais e possibilidades de trabalhos futuros.
 
@@ -1271,7 +1297,7 @@ Foram utilizadas doze combinações diferentes de ordenação dos itens para ent
 
 Foram utilizados também dois viés diferentes para a implementação da {\it BRKGA} nessas mesmas instâncias, cujos experimentos mostraram melhores soluções, como o esperado, porém com um gasto computacional muito alto, dificultando seu uso. Devido a isso, uma possível continuação desse trabalho é a tentativa de melhorar o código, além de implementar a rotação dos itens e realizar mais testes com outras instâncias, tentando obter melhores resultados da {\it BRKGA}.
 
-\printbibliography
+\bibliography{bib}
 
 
 \end{document}
