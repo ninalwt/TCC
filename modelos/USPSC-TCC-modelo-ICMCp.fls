@@ -1,0 +1,4 @@
+PWD c:\Linear\USP\TCC\modelos
+INPUT C:\Users\LINEAR\AppData\Local\MiKTeX\miktex\data\le\pdftex\pdflatex.fmt
+INPUT c:\Linear\USP\TCC\modelos\USPSC-TCC-modelo-ICMCp.tex
+OUTPUT USPSC-TCC-modelo-ICMCp.log

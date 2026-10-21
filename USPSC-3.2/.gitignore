@@ -1,0 +1,17 @@
+## Arquivos auxiliares e temporários que o LaTeX gera
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.idx
+*.ilg
+*.ind
+*.lof
+*.log
+*.loq
+*.lot
+*.out
+*.toc
+*.synctex.gz
+1_relatorio.pdf
