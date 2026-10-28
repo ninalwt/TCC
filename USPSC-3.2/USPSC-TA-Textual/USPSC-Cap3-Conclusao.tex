@@ -9,10 +9,13 @@ Apresentar as conclusões correspondentes aos objetivos ou hipóteses propostos 
 
 \section{Considerações Finais} \label{sec:cons_finais}
 
-Este trabalho é a continuação de um Projeto de Iniciação Científica que consistiu em estudar otimização linear, nos casos contínuo e inteiro, focando na modelagem. Estudamos a partir de ~\cite{arenales} a modelagem de um problema de corte bidimensional regular, em que os itens são retângulos, para então entender como seria feita a resolução de um problema de corte de itens irregulares (polígonos convexos e não convexos) em faixa. 
+Este trabalho é a continuação de um Projeto de Iniciação Científica que consistiu em estudar otimização linear, nos casos contínuo e inteiro, focando na modelagem. 
+Estudamos a partir de ~\cite{arenales} a modelagem de um problema de corte bidimensional regular, em que os itens são retângulos, para então entender como seria feita a resolução de um problema de corte de itens irregulares (polígonos convexos e não convexos) em faixa. 
 
 No projeto atual, para resolução de tal problema, foi necessário estudar técnicas para verificar a sobreposição de itens (particularmente, o \textit{No-Fit Polygon}) e dois métodos para resolução do problema, implementadas em linguagem C, a heurística construtiva \textit{Bottom-Left} e a meta-heurística \textit{BRKGA}. 
 
-Foram utilizadas doze combinações diferentes de ordenação dos itens para então implementar a $BL$ e experimentos numéricos foram realizados com um conjunto de instâncias clássicas da literatura. Estes experimentos mostraram que a heurística foi capaz de encontrar soluções boas e ruins dependendo da ordenação, sendo as $BL_{31}$ e $BL_{21}$ as duas que obtiveram melhores resultados, porém todas em um tempo computacional muito pequeno. 
+Foram utilizadas doze combinações diferentes de ordenação dos itens para então implementar a $BL$ e experimentos numéricos foram realizados com um conjunto de instâncias clássicas da literatura. 
+Estes experimentos mostraram que a heurística foi capaz de encontrar soluções boas e ruins dependendo da ordenação, sendo as $BL_{31}$ e $BL_{21}$ as duas que obtiveram melhores resultados, porém todas em um tempo computacional muito pequeno. 
 
-Foram utilizados também dois viés diferentes para a implementação da \textit{BRKGA} nessas mesmas instâncias, cujos experimentos mostraram melhores soluções, como o esperado, porém com um gasto computacional muito alto, dificultando seu uso. Devido a isso, uma possível continuação desse trabalho é a tentativa de melhorar o código, além de implementar a rotação dos itens e realizar mais testes com outras instâncias, tentando obter melhores resultados da \textit{BRKGA}.
+Foram utilizados também dois viés diferentes para a implementação da \textit{BRKGA} nessas mesmas instâncias, cujos experimentos mostraram melhores soluções, como o esperado, porém com um gasto computacional muito alto, dificultando seu uso. 
+Devido a isso, uma possível continuação desse trabalho é a tentativa de melhorar o código, além de implementar a rotação dos itens e realizar mais testes com outras instâncias, tentando obter melhores resultados da \textit{BRKGA}.

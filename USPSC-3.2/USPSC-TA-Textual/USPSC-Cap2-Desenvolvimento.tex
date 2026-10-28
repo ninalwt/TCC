@@ -10,9 +10,12 @@
 
 \section{Formulação de um problema de corte de itens irregulares} \label{sec:irregular}
 
-Problemas de corte ou empacotamento são aqueles em que se deve organizar uma série de objetos em um recipiente de forma a minimizar desperdício. Como forma de resolução, inicialmente o problema é interpretado e modelado em linguagem matemática. Em seguida, pode ser resolvido de forma exata, encontrando uma solução ótima, ou aproximada, com uma solução boa o suficiente para as especificações, utilizada para diminuir os gastos com tempo e capacidade de processamento provindas da primeira.
+Problemas de corte ou empacotamento são aqueles em que se deve organizar uma série de objetos em um recipiente de forma a minimizar desperdício. 
+Como forma de resolução, inicialmente o problema é interpretado e modelado em linguagem matemática. 
+Em seguida, pode ser resolvido de forma exata, encontrando uma solução ótima, ou aproximada, com uma solução boa o suficiente para as especificações, utilizada para diminuir os gastos com tempo e capacidade de processamento provindas da primeira.
 
-Ao longo desse trabalho queremos encontrar soluções possíveis e relativamente boas para o problema que consiste em posicionar $m$ itens irregulares (representados por polígonos), cada um com determinado número de cópias (quantas vezes um mesmo item deve ser alocado), em uma faixa de comprimento infinito (um retângulo com um lado de tamanho fixo e o outro que se estende o quanto for necessário), sem sobreposição, de forma a minimizar o comprimento da região da faixa utilizada. Observe na Figura~\ref{fig:f1} um exemplo de uma solução desse problema de corte, mais detalhes são apresentados na Seção~\ref{sec:experimentosbl}.
+Ao longo desse trabalho queremos encontrar soluções possíveis e relativamente boas para o problema que consiste em posicionar $m$ itens irregulares (representados por polígonos), cada um com determinado número de cópias (quantas vezes um mesmo item deve ser alocado), em uma faixa de comprimento infinito (um retângulo com um lado de tamanho fixo e o outro que se estende o quanto for necessário), sem sobreposição, de forma a minimizar o comprimento da região da faixa utilizada. 
+Observe na Figura~\ref{fig:f1} um exemplo de uma solução desse problema de corte, mais detalhes são apresentados na Seção~\ref{sec:experimentosbl}.
 
 \begin{figure}[H]
     \centering
@@ -170,11 +173,14 @@ Ao longo desse trabalho queremos encontrar soluções possíveis e relativamente
 \end{figure}
 
 
-O problema de corte em faixa reflete o dilema de muitas indústrias, como a têxtil, ao recortar modelos de roupa de um rolo de tecido, ou a automobilística, recortando itens de carro em uma chapa de metal. Caso um polígono sobreponha outro os itens recortados se tornam inúteis quando o problema é aplicado à vida real, como nestes casos industriais, que é um dos motivos pelo qual não pode haver sobreposição de itens.
+O problema de corte em faixa reflete o dilema de muitas indústrias, como a têxtil, ao recortar modelos de roupa de um rolo de tecido, ou a automobilística, recortando itens de carro em uma chapa de metal. 
+Caso um polígono sobreponha outro os itens recortados se tornam inúteis quando o problema é aplicado à vida real, como nestes casos industriais, que é um dos motivos pelo qual não pode haver sobreposição de itens.
 
-Dessa forma, é imprescindível estar atento se na alocação final não haja dois itens que estão ocupando um mesmo espaço e se todos se encontram no interior do recipiente - a solução seria inutilizável caso contrário. Em desafios bidimensionais, em que os itens são polígonos irregulares, com os quais vamos trabalhar, para averiguar que tais necessidades são atendidas utilizamos os métodos \textit{Inner-Fit Polygon} (IFP) e \textit{No-Fit Polygon} (NFP). Existem outros métodos para a verificação, como os encontrados em \cite{geometry}. Para usar tanto o IFP quanto o NFP, utilizamos algum ponto $P$ do item para localizá-lo, dado como ponto de referência e cuja posição final indica quanto os outros pontos do item serão deslocados.
+Dessa forma, é imprescindível estar atento se na alocação final não haja dois itens que estão ocupando um mesmo espaço e se todos se encontram no interior do recipiente - a solução seria inutilizável caso contrário. Em desafios bidimensionais, em que os itens são polígonos irregulares, com os quais vamos trabalhar, para averiguar que tais necessidades são atendidas utilizamos os métodos \textit{Inner-Fit Polygon} (IFP) e \textit{No-Fit Polygon} (NFP). 
+Existem outros métodos para a verificação, como os encontrados em \cite{geometry}. Para usar tanto o IFP quanto o NFP, utilizamos algum ponto $P$ do item para localizá-lo, dado como ponto de referência e cuja posição final indica quanto os outros pontos do item serão deslocados.
 
-O IFP de um item $X$ é o polígono dado por toda área do recipiente onde o ponto de referência de $X$ pode ser colocado de forma que este item esteja contido por completo no recipiente. No problema com o qual estamos trabalhando o recipiente é a faixa de comprimento infinito, um retângulo de altura $A$ determinada e comprimento $C$ a ser minimizado, com o ponto inferior esquerdo posicionado em $(0,0)$.
+O IFP de um item $X$ é o polígono dado por toda área do recipiente onde o ponto de referência de $X$ pode ser colocado de forma que este item esteja contido por completo no recipiente. 
+No problema com o qual estamos trabalhando o recipiente é a faixa de comprimento infinito, um retângulo de altura $A$ determinada e comprimento $C$ a ser minimizado, com o ponto inferior esquerdo posicionado em $(0,0)$.
 
 
 \begin{figure} [H]
@@ -184,13 +190,21 @@ O IFP de um item $X$ é o polígono dado por toda área do recipiente onde o pon
     \label{fig:f2}
 \end{figure}
 
-No exemplo da Figura~\ref{fig:f2}, o retângulo delimitado em preto é a faixa e queremos posicionar $O$ em seu interior. O $IFP_O$ está representado na figura pela área em verde e o ponto de referência $P$ é o em destaque laranja. Na figura, $H_1$ e $H_2$ representam, respectivamente, as distâncias entre $P$ e o ponto mais baixo de $O$ e entre $P$ e o ponto mais alto de $O$, e $h$ é a distância vertical restante para posicionar $P$. Além disso, $P$ só pode ser colocado horizontalmente à direita de $C_1$, distância entre $P$ e o ponto mais à esquerda de $O$. No desenho, $O$ estaria alocado no ponto mais à esquerda e abaixo possível.
+No exemplo da Figura~\ref{fig:f2}, o retângulo delimitado em preto é a faixa e queremos posicionar $O$ em seu interior. 
+O $IFP_O$ está representado na figura pela área em verde e o ponto de referência $P$ é o em destaque laranja. 
+Na figura, $H_1$ e $H_2$ representam, respectivamente, as distâncias entre $P$ e o ponto mais baixo de $O$ e entre $P$ e o ponto mais alto de $O$, e $h$ é a distância vertical restante para posicionar $P$. 
+Além disso, $P$ só pode ser colocado horizontalmente à direita de $C_1$, distância entre $P$ e o ponto mais à esquerda de $O$. 
+No desenho, $O$ estaria alocado no ponto mais à esquerda e abaixo possível.
 
-Agora que analisamos a relação de $O$ com o recipiente, considere que queremos entender a interação entre os polígonos $M$ e $O$ presentes na Figura~\ref{fig:f3a}, para garantir que um não irá sobrepor o outro. Uma forma de fazer isso é manter $M$ parado e, garantindo que $O$ encoste nele o tempo todo, transladar $O$ ao seu redor, trançando o caminho feito pelo ponto de referência de $O$. O polígono formado por esse caminho é o que chamamos de \textit{No-Fit Polygon (NFP)} e seu interior indica onde haverá sobreposição entre os dois, se colocarmos o ponto de referência de $O$. Caso o ponto de referência esteja no exterior do NFP, $O$ e $M$ não se encostarão.
+Agora que analisamos a relação de $O$ com o recipiente, considere que queremos entender a interação entre os polígonos $M$ e $O$ presentes na Figura~\ref{fig:f3a}, para garantir que um não irá sobrepor o outro. 
+Uma forma de fazer isso é manter $M$ parado e, garantindo que $O$ encoste nele o tempo todo, transladar $O$ ao seu redor, trançando o caminho feito pelo ponto de referência de $O$. 
+O polígono formado por esse caminho é o que chamamos de \textit{No-Fit Polygon (NFP)} e seu interior indica onde haverá sobreposição entre os dois, se colocarmos o ponto de referência de $O$. 
+Caso o ponto de referência esteja no exterior do NFP, $O$ e $M$ não se encostarão.
 
-Ao longo desse trabalho, chamamos de $NFP_{MO}$ aquele em que $M$ está fixo e $O$ translada ao seu redor, como observado na Figura~\ref{fig:f3b}. É importante notar que seu desenho poderá ser diferente do $NFP_{OM}$, o NFP gerado se alterarmos qual polígono translada e qual está fixo.
+Ao longo desse trabalho, chamamos de $NFP_{MO}$ aquele em que $M$ está fixo e $O$ translada ao seu redor, como observado na Figura~\ref{fig:f3b}. 
+É importante notar que seu desenho poderá ser diferente do $NFP_{OM}$, o NFP gerado se alterarmos qual polígono translada e qual está fixo.
 
-\begin{figure} [h]
+\begin{figure} [ht]
     \centering
     \begin{subfigure}{.42\textwidth}
         \centering
@@ -209,9 +223,13 @@ Ao longo desse trabalho, chamamos de $NFP_{MO}$ aquele em que $M$ está fixo e $
 \end{figure}
 
 
-Existem diversas maneiras de construir NFPs, como pode ser visto em \cite{irregular}. A mais intuitiva é a que acabamos de apresentar, transladando um em torno do outro, garantindo que estejam encostados e traçando a fronteira a partir do ponto de referência do polígono transladado. Vale destacar que, no nosso problema, a orientação dos polígonos é fixa, ou seja, eles não rotacionam.
+Existem diversas maneiras de construir NFPs, como pode ser visto em \cite{irregular}. 
+A mais intuitiva é a que acabamos de apresentar, transladando um em torno do outro, garantindo que estejam encostados e traçando a fronteira a partir do ponto de referência do polígono transladado. 
+Vale destacar que, no nosso problema, a orientação dos polígonos é fixa, ou seja, eles não rotacionam.
 
-Os algoritmos para calcular NFPs de polígonos convexos são mais simples, enquanto os para cálculo de não convexos são bem mais complicados. Portanto, quando um polígono (ou ambos) não é convexo, iremos decompô-lo em polígonos convexos menores (que chamamos de partes), para facilitar os cálculos, e o NFP será montado a partir da translação de cada parte separadamente. O NFP final de itens não convexos é constituído de partes que se sobrepõem e é importante citar que o item apenas estará em uma posição válida se ele não estiver no interior de nenhuma das partes.
+Os algoritmos para calcular NFPs de polígonos convexos são mais simples, enquanto os para cálculo de não convexos são bem mais complicados. 
+Portanto, quando um polígono (ou ambos) não é convexo, iremos decompô-lo em polígonos convexos menores (que chamamos de partes), para facilitar os cálculos, e o NFP será montado a partir da translação de cada parte separadamente. 
+O NFP final de itens não convexos é constituído de partes que se sobrepõem e é importante citar que o item apenas estará em uma posição válida se ele não estiver no interior de nenhuma das partes.
 
 \begin{figure}[H]
     \centering
@@ -232,7 +250,9 @@ Os algoritmos para calcular NFPs de polígonos convexos são mais simples, enqua
     \label{fig:f4}
 \end{figure}
 
-Perceba que o polígono $M$ apresentado anteriormente não é convexo. Para construir o $NFP_{MO}$, podemos decompô-lo ele em dois polígonos convexos, como possível observar nas Figuras~\ref{fig:f4a} e~\ref{fig:f4b}, e vamos construir o NFP de $O$ com relação às partes 1 e 2 do polígono $M$. Nas Figuras~\ref{fig:f5a} e~\ref{fig:f5b} temos $O$ transladando cada parte de $M$. Observe que deve ser feito um ajuste final no posicionamento de cada parte do NFP ao juntá-las, tendo em mente qual a posição de uma parte em relação à outra. Na Figura~\ref{fig:f6a} temos a junção das partes e na Figura~\ref{fig:f6b} temos o $NFP_{MO}$ por essa montagem, cujo contorno exterior podemos observar ser exatamente o mesmo da Figura~\ref{fig:f3b}.
+Perceba que o polígono $M$ apresentado anteriormente não é convexo. Para construir o $NFP_{MO}$, podemos decompô-lo ele em dois polígonos convexos, como possível observar nas Figuras~\ref{fig:f4a} e~\ref{fig:f4b}, e vamos construir o NFP de $O$ com relação às partes 1 e 2 do polígono $M$. 
+Nas Figuras~\ref{fig:f5a} e~\ref{fig:f5b} temos $O$ transladando cada parte de $M$. Observe que deve ser feito um ajuste final no posicionamento de cada parte do NFP ao juntá-las, tendo em mente qual a posição de uma parte em relação à outra. 
+Na Figura~\ref{fig:f6a} temos a junção das partes e na Figura~\ref{fig:f6b} temos o $NFP_{MO}$ por essa montagem, cujo contorno exterior podemos observar ser exatamente o mesmo da Figura~\ref{fig:f3b}.
 
 \begin{figure}[H]
     \centering
@@ -282,9 +302,12 @@ Na próxima seção vamos colocar todas as ferramentas apresentadas em uso para 
 
 \section{Heurística construtiva para resolver o problema de corte de itens irregulares} \label{sec:BL}
 
-Uma heurística é uma forma de encontrar uma solução suficientemente boa para um problema de otimização, diminuindo os gastos computacionais e de tempo que seriam gastos para encontrar uma solução ótima. Dada uma lista de polígonos ordenados segundo algum critério, a heurística \textit{Bottom-Left}, estudada por meio de \cite{irregular}, consiste em alocar um polígono de cada vez no ponto mais à esquerda possível da faixa e, caso haja mais de um ponto, mais abaixo. Dessa forma, é uma heurística simples para problemas de empacotamento, que iremos aplicar para resolver o problema citado na Seção \ref{sec:irregular}.
+Uma heurística é uma forma de encontrar uma solução suficientemente boa para um problema de otimização, diminuindo os gastos computacionais e de tempo que seriam gastos para encontrar uma solução ótima. 
+Dada uma lista de polígonos ordenados segundo algum critério, a heurística \textit{Bottom-Left}, estudada por meio de \cite{irregular}, consiste em alocar um polígono de cada vez no ponto mais à esquerda possível da faixa e, caso haja mais de um ponto, mais abaixo. 
+Dessa forma, é uma heurística simples para problemas de empacotamento, que iremos aplicar para resolver o problema citado na Seção \ref{sec:irregular}.
 
-Utilizando como exemplo a Figura~\ref{fig:f7}, temos os polígonos já conhecidos $M$ e $O$ e um quadrado $N$ de lado 6, na faixa de altura $A = 20$. A ordem de posicionamento escolhida é alfabética e, dado que $M$ e $N$ já estão situados de acordo com a Figura~\ref{fig:f7} e o IFP de $O$ é o mesmo da Figura~\ref{fig:f2}, vamos alocar $O$ utilizando o $NFP_{MO}$, o $NFP_{NO}$ e o $IFP_O$.
+Utilizando como exemplo a Figura~\ref{fig:f7}, temos os polígonos já conhecidos $M$ e $O$ e um quadrado $N$ de lado 6, na faixa de altura $A = 20$. 
+A ordem de posicionamento escolhida é alfabética e, dado que $M$ e $N$ já estão situados de acordo com a Figura~\ref{fig:f7} e o IFP de $O$ é o mesmo da Figura~\ref{fig:f2}, vamos alocar $O$ utilizando o $NFP_{MO}$, o $NFP_{NO}$ e o $IFP_O$.
 
 \begin{figure}[H]
     \centering
@@ -294,9 +317,12 @@ Utilizando como exemplo a Figura~\ref{fig:f7}, temos os polígonos já conhecido
 \end{figure}
 
 
-Uma maneira de encontrar as possíveis posições para alocar o polígono $O$ é calcular todas interseções das arestas entre $NFP_{MO}$, $NFP_{NO}$ e $IFP_O$ e remover as que não forem viáveis. Note que isso é prático pois, ao alocarmos um item, sempre é possível encaixá-lo melhor ao garantir que ele esteja encostado ao menos em duas arestas (sejam elas de itens ou da fronteira do recipiente).
+Uma maneira de encontrar as possíveis posições para alocar o polígono $O$ é calcular todas interseções das arestas entre $NFP_{MO}$, $NFP_{NO}$ e $IFP_O$ e remover as que não forem viáveis. 
+Note que isso é prático pois, ao alocarmos um item, sempre é possível encaixá-lo melhor ao garantir que ele esteja encostado ao menos em duas arestas (sejam elas de itens ou da fronteira do recipiente).
 
-Observe na Figura~\ref{fig:f8} os NFPs deslocados baseados na alocação do seu respectivo polígono base e na Figura~\ref{fig:f9} todas as intersecções. Os pontos em vermelho são aqueles que estão na área proibida de alguma das restrições, ou seja, dentro de algum NFP ou no exterior do IFP. Ademais, podemos ver que entre os cinco pontos permitidos, que estão em verde, não existe um mais à esquerda (dado que todos tem mesma abscissa) e o mais abaixo é aquele onde $O$ deve ser posicionado (ponto $P_5$).
+Observe na Figura~\ref{fig:f8} os NFPs deslocados baseados na alocação do seu respectivo polígono base e na Figura~\ref{fig:f9} todas as intersecções. 
+Os pontos em vermelho são aqueles que estão na área proibida de alguma das restrições, ou seja, dentro de algum NFP ou no exterior do IFP. 
+Ademais, podemos ver que entre os cinco pontos permitidos, que estão em verde, não existe um mais à esquerda (dado que todos tem mesma abscissa) e o mais abaixo é aquele onde $O$ deve ser posicionado (ponto $P_5$).
 
 Na Figura~\ref{fig:f10} temos então o polígono $O$ em sua posição final de acordo com a heurística \textit{Bottom-Left}, em $P_5$.
 
@@ -323,13 +349,18 @@ Na Figura~\ref{fig:f10} temos então o polígono $O$ em sua posição final de a
 \end{figure}
 
 
-Agora que temos todas as ferramentas de alocação bem sedimentadas, vamos para a resolução em si. Para resolver o problema de corte de itens irregulares em faixa foi implementado um código em linguagem C com a heurística \textit{Bottom-Left}. O programa lê em um arquivo ``general\_data.txt'' a altura $A$ da faixa, o número $m$ de itens e $m$ linhas seguintes contendo o número de cópias de cada item. Em seguida, é lida uma lista de $m$ arquivos ``pieceX.txt'' que diz o número de partes do item $X$, representado por um número de 1 a $m$, e lista os vértices em sentido anti-horário para cada parte, considerando que o primeiro ponto da primeira parte é $(0,0)$, que é o ponto de referência de $X$.
+Agora que temos todas as ferramentas de alocação bem sedimentadas, vamos para a resolução em si. 
+Para resolver o problema de corte de itens irregulares em faixa foi implementado um código em linguagem C com a heurística \textit{Bottom-Left}. 
+O programa lê em um arquivo ``general\_data.txt'' a altura $A$ da faixa, o número $m$ de itens e $m$ linhas seguintes contendo o número de cópias de cada item. 
+Em seguida, é lida uma lista de $m$ arquivos ``pieceX.txt'' que diz o número de partes do item $X$, representado por um número de 1 a $m$, e lista os vértices em sentido anti-horário para cada parte, considerando que o primeiro ponto da primeira parte é $(0,0)$, que é o ponto de referência de $X$.
 
 Por último, o programa lê $m^2$ arquivos ``NFP\_i\_0\_j\_0.txt'' com as partes e vértices de cada NFP, construídos pensando no ponto de referência do item $i$ em $(0,0)$ e o item $j$ transladando ao seu redor, ambos com rotação de $0$ graus.
 
 A estrutura de dados consiste em armazenar em uma estrutura referente a um item $X$ seu polígono, seus pontos extremos, o número de cópias, a lista de $NFP_{XJ}$ (onde $J = 1, \dots, m$), o vértice do ponto de referência em sua alocação final para cada cópia e uma variável auxiliar para numerar quantas cópias já foram alocadas.
 
-Ainda no terminal, antes de executar o programa, é usado um \textit{makefile} para compilar o programa e gerar um executável, especificando nele quais as instâncias a serem resolvidas e qual ordenação será utilizada para a \textit{Bottom-Left}. As ordenações foram separadas em duas categorias que são combinadas na hora de aplicar: método e sentido da ordenação. O método é dado por um número de 1 a 6 que dita qual valor a ser observado para ordenar o itens, as opções são as seguintes:
+Ainda no terminal, antes de executar o programa, é usado um \textit{makefile} para compilar o programa e gerar um executável, especificando nele quais as instâncias a serem resolvidas e qual ordenação será utilizada para a \textit{Bottom-Left}. 
+As ordenações foram separadas em duas categorias que são combinadas na hora de aplicar: método e sentido da ordenação. 
+O método é dado por um número de 1 a 6 que dita qual valor a ser observado para ordenar o itens, as opções são as seguintes:
 
 \begin{enumerate}
     \item ordenação baseada na área do item;
@@ -340,7 +371,9 @@ Ainda no terminal, antes de executar o programa, é usado um \textit{makefile} p
     \item ordenação baseada na divisão entre o comprimento (diferença entre pontos extremos em relação ao eixo $X$) e altura (diferença entre pontos extremos em relação ao eixo $Y$) de cada item.
 \end{enumerate}
 
-Em relação ao sentido da ordenação temos apenas dois valores possíveis: $1$ ordena o índice com valores dos cálculos do método de forma decrescente e $2$ de forma crescente. Então, após a leitura de dados, o programa passa pelas seguintes etapas:
+Em relação ao sentido da ordenação temos apenas dois valores possíveis: $1$ ordena o índice com valores dos cálculos do método de forma decrescente e $2$ de forma crescente. 
+Então, após a leitura de dados, o programa passa pelas seguintes etapas:
+
 \begin{enumerate}
     \item Ordena todos os itens (incluindo as cópias) utilizando a opção escolhida;
     \item Para cada item $a$, a partir da ordem do Passo 1:
@@ -361,20 +394,31 @@ Em relação ao sentido da ordenação temos apenas dois valores possíveis: $1$
 
 %Conforme cada ponto é calculado, sua validade só será averiguada se for mais à esquerda (ou tão à esquerda quanto e mais abaixo) que o último ponto dado como válido.
 
-Por fim o programa imprime um arquivo em Latex utilizando a ferramenta \textit{Tikz} do leiaute correspondente, em que o recipiente é representado em azul, o comprimento obtido é a linha vertical pontilhada e os itens são coloridos (itens não convexos são representados por suas partes convexas conectadas, de mesma cor). Imprime também as informações de comprimento mínimo alcançado e tempo de execução num único arquivo de texto para facilitar sua disposição em forma de tabela (como a da Seção \ref{sec:experimentosbl}).
+Por fim o programa imprime um arquivo em Latex utilizando a ferramenta \textit{Tikz} do leiaute correspondente, em que o recipiente é representado em azul, o comprimento obtido é a linha vertical pontilhada e os itens são coloridos (itens não convexos são representados por suas partes convexas conectadas, de mesma cor). 
+Imprime também as informações de comprimento mínimo alcançado e tempo de execução num único arquivo de texto para facilitar sua disposição em forma de tabela (como a da Seção \ref{sec:experimentosbl}).
 
 
 \subsection{Experimentos numéricos} \label{sec:experimentosbl}
 
 
-Para que fosse feito o teste do código, implementado em linguagem C, executamos a heurística \textit{Bottom-Left} com todas as combinações de método e sentido de ordenação apresentadas na Seção~\ref{sec:BL}, totalizando doze variantes da heurística, chamadas de $BL_{MS}$, em que $M$ representa o método e $S$ o sentido da ordenação. As variações foram aplicadas em vinte e nove instâncias clássicas da literatura\footnote{\url{https://www.euro-online.org/websites/esicup/data-sets}, acessado em 20/02/2025.}, as presentes nas tabelas~\ref{tab:t1} e~\ref{tab:t2}.
+Para que fosse feito o teste do código, implementado em linguagem C, executamos a heurística \textit{Bottom-Left} com todas as combinações de método e sentido de ordenação apresentadas na Seção~\ref{sec:BL}, totalizando doze variantes da heurística, chamadas de $BL_{MS}$, em que $M$ representa o método e $S$ o sentido da ordenação. 
+As variações foram aplicadas em vinte e nove instâncias clássicas da literatura\footnote{\url{https://www.euro-online.org/websites/esicup/data-sets}, acessado em 20/02/2025.}, as presentes nas tabelas~\ref{tab:t1} e~\ref{tab:t2}.
 
-Os experimentos foram executados em um computador de 8GB de memória, processador Intel® Core™ i5-8250U x 8 e Sistema Operacional Ubuntu 24.04.2 LTS. Tanto o código em C quanto os arquivos base das instâncias e todos os leiautes obtidos ao longo deste trabalho de Iniciação Científica podem ser acessados em \url{https://sites.icmc.usp.br/andretta/pinheiro-2025/}.
+Os experimentos foram executados em um computador de 8GB de memória, processador Intel® Core™ i5-8250U x 8 e Sistema Operacional Ubuntu 24.04.2 LTS. 
+Tanto o código em C quanto os arquivos base das instâncias e todos os leiautes obtidos ao longo deste trabalho de Iniciação Científica podem ser acessados em \url{https://sites.icmc.usp.br/andretta/pinheiro-2025/}.
 
 
-Os resultados obtidos foram divididos em duas tabelas~\ref{tab:t1} e~\ref{tab:t2}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, cada grupo de duas colunas representa o resultado da execução de uma combinação $BL_{MS}$, em que $M = \{1, 2, \dots, 6\}$ e $S = \{1, 2\}$. A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística $BL_{MS}$ correspondente e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância. O valor em destaque em cada linha é o menor valor entre todos os resultados para aquela instância. Na Tabela~\ref{tab:t1}, temos as 6 variações da heurística que apresentaram as maiores quantidades de instâncias para as quais se obteve melhores comprimentos, ordenadas da que obteve maior quantidade de melhores resultados para a que obteve menor quantidade. Na Tabela~\ref{tab:t2} estão as variantes restantes da heurística.
+Os resultados obtidos foram divididos em duas tabelas~\ref{tab:t1} e~\ref{tab:t2}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). 
+Em seguida, cada grupo de duas colunas representa o resultado da execução de uma combinação $BL_{MS}$, em que $M = \{1, 2, \dots, 6\}$ e $S = \{1, 2\}$. 
+A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística $BL_{MS}$ correspondente e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância. 
+O valor em destaque em cada linha é o menor valor entre todos os resultados para aquela instância. 
+Na Tabela~\ref{tab:t1}, temos as 6 variações da heurística que apresentaram as maiores quantidades de instâncias para as quais se obteve melhores comprimentos, ordenadas da que obteve maior quantidade de melhores resultados para a que obteve menor quantidade. 
+Na Tabela~\ref{tab:t2} estão as variantes restantes da heurística.
 
-Como podemos observar na Tabela~\ref{tab:t1}, a ordenação dos itens de forma decrescente baseada no comprimento de cada um ($BL_{31}$) obteve o maior número de bons resultados (12 de 29 instâncias) e, assim como todas as variações, num tempo de execução muito pequeno para todas as instâncias. Para entender a disparidade existente entre as variações da heurística aplicadas a uma mesma instância, dividimos o menor valor de comprimento obtido para cada uma pelo maior. Assim, observamos a maior diferença de valores na instância \textit{poly5A}, com razão $0,895$, e a menor na instância \textit{poly1A}, com razão $0,715$. Ou seja, notamos que como nenhuma proporção resultou em $1$, variar a ordenação para aplicar a heurística gera resultados diferentes em todos os casos. Quando comparamos somente os resultados das heurísticas $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$, as quatro com melhores resultados, a posição entre qual tem maior número de melhores resultados não foi alterada.
+Como podemos observar na Tabela~\ref{tab:t1}, a ordenação dos itens de forma decrescente baseada no comprimento de cada um ($BL_{31}$) obteve o maior número de bons resultados (12 de 29 instâncias) e, assim como todas as variações, num tempo de execução muito pequeno para todas as instâncias. 
+Para entender a disparidade existente entre as variações da heurística aplicadas a uma mesma instância, dividimos o menor valor de comprimento obtido para cada uma pelo maior. 
+Assim, observamos a maior diferença de valores na instância \textit{poly5A}, com razão $0,895$, e a menor na instância \textit{poly1A}, com razão $0,715$. Ou seja, notamos que como nenhuma proporção resultou em $1$, variar a ordenação para aplicar a heurística gera resultados diferentes em todos os casos. 
+Quando comparamos somente os resultados das heurísticas $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$, as quatro com melhores resultados, a posição entre qual tem maior número de melhores resultados não foi alterada.
 
 
 
@@ -495,12 +539,18 @@ Os principais elementos desse algoritmo são:
     \item As \textbf{gerações}, utilizadas criar uma nova população a partir da geração anterior, usando a elite, cruzamentos e mutações. 
 \end{itemize}
 
-Dessa forma, o algoritmo gera chaves para cada indivíduo, montando a população com $I$ desses, ordena os cromossomos de cada indivíduo, geralmente de forma crescente, e chama a função \textit{fitness}, obtendo o valor $f$ de cada um e a partir disso escolhendo os $E$ indivíduos da elite. Em seguida, é elaborada uma nova geração composta por essa elite, $M$ novos indivíduos gerados por mutação e $C$ outros gerados do cruzamento enviesado. Dessa forma, são construídas novas gerações até que seja atingida uma condição de parada, que nesse caso determinamos como o máximo de $G$ gerações.
+Dessa forma, o algoritmo gera chaves para cada indivíduo, montando a população com $I$ desses, ordena os cromossomos de cada indivíduo, geralmente de forma crescente, e chama a função \textit{fitness}, obtendo o valor $f$ de cada um e a partir disso escolhendo os $E$ indivíduos da elite. 
+Em seguida, é elaborada uma nova geração composta por essa elite, $M$ novos indivíduos gerados por mutação e $C$ outros gerados do cruzamento enviesado. Dessa forma, são construídas novas gerações até que seja atingida uma condição de parada, que nesse caso determinamos como o máximo de $G$ gerações.
 
   
-Nesse projeto, cada chave aleatória nos cromossomos foi associada a um item a ser alocado (ou seja, o total $m$ de chaves num cromossomo é o número total de itens da instância, incluindo as cópias). Este vetor de chaves foi ordenado de forma crescente, gerando uma ordenação para os itens. Então, a heurística \textit{BL} foi aplicada usando os itens da ordenação dada por cada indivíduo para alocar os itens na faixa, resultando em um comprimento final utilizado como parâmetro $f$ do indivíduo.
+Nesse projeto, cada chave aleatória nos cromossomos foi associada a um item a ser alocado (ou seja, o total $m$ de chaves num cromossomo é o número total de itens da instância, incluindo as cópias). 
+Este vetor de chaves foi ordenado de forma crescente, gerando uma ordenação para os itens. 
+Então, a heurística \textit{BL} foi aplicada usando os itens da ordenação dada por cada indivíduo para alocar os itens na faixa, resultando em um comprimento final utilizado como parâmetro $f$ do indivíduo.
 
-Para exemplificar como o \textit{fitness} $f$ é calculado para cada indivíduo, considere uma instância cujos itens são um triângulo retângulo (item $A$), um quadrado (item $B$) e um triângulo equilátero (item $C$), como na Figura~\ref{fig:f14}. Considere também que foi criado um indivíduo $1$, em que foi gerada uma chave aleatória para cada um desses itens, presentes na mesma figura. Podemos ver então, na Figura~\ref{fig:f15a} como fica a sequência do cromossomo de $1$ após a ordenação dos itens e chaves em ordem crescente, e em~\ref{fig:f15b} sua alocação por meio da \textit{BL} baseada nessa ordem. O comprimento usado nesta alocação é o valor de $f$ para o indivíduo $1$. O mesmo vale para um indivíduo $2$, representado pelas chaves na Figura~\ref{fig:f16a} e sua ordenação em~\ref{fig:f16b}.
+Para exemplificar como o \textit{fitness} $f$ é calculado para cada indivíduo, considere uma instância cujos itens são um triângulo retângulo (item $A$), um quadrado (item $B$) e um triângulo equilátero (item $C$), como na Figura~\ref{fig:f14}. 
+Considere também que foi criado um indivíduo $1$, em que foi gerada uma chave aleatória para cada um desses itens, presentes na mesma figura. Podemos ver então, na Figura~\ref{fig:f15a} como fica a sequência do cromossomo de $1$ após a ordenação dos itens e chaves em ordem crescente, e em~\ref{fig:f15b} sua alocação por meio da \textit{BL} baseada nessa ordem. 
+O comprimento usado nesta alocação é o valor de $f$ para o indivíduo $1$. 
+O mesmo vale para um indivíduo $2$, representado pelas chaves na Figura~\ref{fig:f16a} e sua ordenação em~\ref{fig:f16b}.
 
 
 \begin{figure}[H]
@@ -550,7 +600,9 @@ Para exemplificar como o \textit{fitness} $f$ é calculado para cada indivíduo,
     \label{fig:f16}
 \end{figure}
 
-Para exemplificar o cruzamento, usando o mesmo exemplo, o cromossomo de cada um dos pais é tomado em sua ordem original (ou seja, antes da ordenação de chaves) e para cada item do indivíduo novo é sorteado de qual indivíduo será proveniente a chave atrelada. Observe na Figura~\ref{fig:f17} o descendente $3$ criado a partir do cruzamento entre $1$ e $2$ e em~\ref{fig:f18} como fica então sua ordenação. Perceba que, embora os valores não sejam os mesmos, sua ordenação é a mesma do indivíduo $2$, ou seja, nem sempre o cruzamento gera indivíduos diferentes.
+Para exemplificar o cruzamento, usando o mesmo exemplo, o cromossomo de cada um dos pais é tomado em sua ordem original (ou seja, antes da ordenação de chaves) e para cada item do indivíduo novo é sorteado de qual indivíduo será proveniente a chave atrelada. 
+Observe na Figura~\ref{fig:f17} o descendente $3$ criado a partir do cruzamento entre $1$ e $2$ e em~\ref{fig:f18} como fica então sua ordenação. 
+Perceba que, embora os valores não sejam os mesmos, sua ordenação é a mesma do indivíduo $2$, ou seja, nem sempre o cruzamento gera indivíduos diferentes.
 
 \begin{figure}[H]
     \centering
@@ -568,7 +620,8 @@ Para exemplificar o cruzamento, usando o mesmo exemplo, o cromossomo de cada um 
 
 
 Implementamos a \textit{BRKGA} em linguagem C, com as mesmas especificações de leitura feitas para a implementação da \textit{BL}, especificadas na Seção~\ref{sec:BL}.%, porém ao invés de um arquivo ``makefile'' utilizado para a execução, é utilizado um arquivo ``comando.sh'' onde cada linha é o comando de execução com a instância a ser rodada e 
-Os valores dos parâmetros $I$, $G$, $E$, $C$ e $b$ são passados para o programa no momento de sua execução. A estrutura de dados dos itens e \textit{NFPs} também é a mesma apresentada na implementação da \textit{BL}.
+Os valores dos parâmetros $I$, $G$, $E$, $C$ e $b$ são passados para o programa no momento de sua execução. 
+A estrutura de dados dos itens e \textit{NFPs} também é a mesma apresentada na implementação da \textit{BL}.
 
 Em relação à estrutura de dados específica para o algoritmo genético, temos a população que armazena os valores referentes à quantidade de indivíduos $E$ da elite, $M$ da mutação e $C$ do cruzamento, o viés $b$ do cruzamento, $G$ da quantidade de gerações totais, $I$ total de indivíduos na população, além de um ponteiro para o vetor fixo de indivíduos ao longo das gerações e um ponteiro para um vetor ``lixo'' de indivíduos, utilizado para armazenar os indivíduos provenientes do cruzamento antes de colocá-los no vetor fixo.
 
@@ -598,14 +651,19 @@ Após a leitura dos dados, o programa passa pelas etapas a seguir:
     \end{enumerate}
 \end{enumerate}
 
-Por fim o programa identifica qual o indivíduo com melhor \textit{fitness} resultante e imprime em um arquivo Latex a partir da ferramenta \textit{Tikz} o leiaute correspondente, em que o recipiente é representado em azul, o comprimento obtido é a linha vertical pontilhada e os itens são coloridos (itens não convexos são representados por suas partes convexas conectadas, de mesma cor). Imprime também as informações de comprimento mínimo alcançado e tempo de execução num único arquivo de texto para facilitar sua disposição em forma de tabela (como a da Seção \ref{sec:experimentosbl}).
+Por fim o programa identifica qual o indivíduo com melhor \textit{fitness} resultante e imprime em um arquivo Latex a partir da ferramenta \textit{Tikz} o leiaute correspondente, em que o recipiente é representado em azul, o comprimento obtido é a linha vertical pontilhada e os itens são coloridos (itens não convexos são representados por suas partes convexas conectadas, de mesma cor). 
+Imprime também as informações de comprimento mínimo alcançado e tempo de execução num único arquivo de texto para facilitar sua disposição em forma de tabela (como a da Seção \ref{sec:experimentosbl}).
 
 
 \subsection{Experimentos numéricos} \label{sec:experimentosBRKGA}
 
-A meta-heurística \textit{BRKGA} utilizou como parâmetros $I = 100$, $E = 20$, $M = 10$, $C = 70$ e $G = 10$. Para cada instância executamos o \textit{BRKGA} duas vezes, uma com $b = 0,7$ e outra com $b = 0,5$. Os experimentos foram feitas usando as mesmas vinte e nove instâncias clássicas da literatura\footnote{\url{https://www.euro-online.org/websites/esicup/data-sets/}, acessado em 14/08/2025.} da Seção~\ref{sec:experimentosbl}, executadas também no mesmo computador presente nesta.
+A meta-heurística \textit{BRKGA} utilizou como parâmetros $I = 100$, $E = 20$, $M = 10$, $C = 70$ e $G = 10$. Para cada instância executamos o \textit{BRKGA} duas vezes, uma com $b = 0,7$ e outra com $b = 0,5$. 
+Os experimentos foram feitas usando as mesmas vinte e nove instâncias clássicas da literatura\footnote{\url{https://www.euro-online.org/websites/esicup/data-sets/}, acessado em 14/08/2025.} da Seção~\ref{sec:experimentosbl}, executadas também no mesmo computador presente nesta.
 
-Os resultados obtidos se encontram na Tabela~\ref{tab:t3}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, os grupos de duas colunas apresentam os resultado de cada execução da \textit{BRKGA}, uma com viés $0,5$ e a outra com viés $0,7$. A coluna ``Comp'' representa o comprimento obtido para a instância pela $BRKGA$ correspondente, em que o valor em destaque em cada linha é o menor resultado obtido e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância.
+Os resultados obtidos se encontram na Tabela~\ref{tab:t3}. 
+A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). 
+Em seguida, os grupos de duas colunas apresentam os resultado de cada execução da \textit{BRKGA}, uma com viés $0,5$ e a outra com viés $0,7$. 
+A coluna ``Comp'' representa o comprimento obtido para a instância pela $BRKGA$ correspondente, em que o valor em destaque em cada linha é o menor resultado obtido e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância.
 
 
 \begin{adjustwidth}{-2 cm}{-2,5 cm}\centering\begin{threeparttable}
@@ -660,11 +718,15 @@ Os resultados nos levam a acreditar que o viés de $0,7$ aplicado no cruzamento 
 
 \section{Comparação entre métodos utilizados} \label{sec:comp}
 
-A seguir, na Tabela~\ref{tab:t4} temos a comparação entre os dois resultados da \textit{BRKGA} e os quatro melhores da \textit{BL}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, os grupos de duas colunas apresentam os resultado de cada execução com o respectivo método utilizado no topo da coluna. A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística correspondente, em que o valor em destaque em cada linha é o menor resultado obtido e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância.
+A seguir, na Tabela~\ref{tab:t4} temos a comparação entre os dois resultados da \textit{BRKGA} e os quatro melhores da \textit{BL}. 
+A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, os grupos de duas colunas apresentam os resultado de cada execução com o respectivo método utilizado no topo da coluna. 
+A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística correspondente, em que o valor em destaque em cada linha é o menor resultado obtido e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância.
 
 %\textcolor{red}{ATÉ AGORA ESTAVA FALANDO EM COMPRIMENTO, MAS A PARTIR DAQUI VIROU . DEIXA TUDO IGUAL.}
 
-É possível perceber que em todas as instâncias o comprimento final obtida pela \textit{BRKGA} foi melhor que todas da \textit{BL} apresentadas, incluindo as outras oito variações que se encontram nas tabelas~\ref{tab:t1} e~\ref{tab:t2}. O único caso em que o resultado da \textit{BRKGA} é igual a algum da \textit{BL} é a instância \textit{Three}, cuja solução $6,20$ já tinha sido obtida pela $BL_{12}$. Ainda assim, em muitos casos essa diferença é muito pequena e, ao levar em conta o fato de que o custo computacional e de tempo da \textit{BRKGA} é em média 1500 vezes maior que os da \textit{BL}, não é necessariamente recomendado seu uso.
+É possível perceber que em todas as instâncias o comprimento final obtida pela \textit{BRKGA} foi melhor que todas da \textit{BL} apresentadas, incluindo as outras oito variações que se encontram nas tabelas~\ref{tab:t1} e~\ref{tab:t2}. 
+O único caso em que o resultado da \textit{BRKGA} é igual a algum da \textit{BL} é a instância \textit{Three}, cuja solução $6,20$ já tinha sido obtida pela $BL_{12}$. 
+Ainda assim, em muitos casos essa diferença é muito pequena e, ao levar em conta o fato de que o custo computacional e de tempo da \textit{BRKGA} é em média 1500 vezes maior que os da \textit{BL}, não é necessariamente recomendado seu uso.
 
 \begin{adjustwidth}{-2.5 cm}{-2.5 cm}\centering\begin{threeparttable}
 \renewcommand{\arraystretch}{1.2}%
