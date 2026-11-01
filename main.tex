@@ -1,0 +1,485 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[utf8]{inputenc} % Para caracteres especiais
+\usepackage[brazil]{babel} % Para nomes de sessões e teoremas e etc em pt
+\usepackage{amsmath, amsthm, amssymb} % Algumas funcionalidades matemáticas????
+\usepackage{csquotes}
+\usepackage[table]{xcolor}
+\usepackage{float}
+\usepackage{color}
+\usepackage{comment}
+\usepackage{tikz}
+\usepackage{url}
+
+%\usepackage{geometry}[left=4cm,right=4cm]
+
+\usepackage[
+backend=biber,
+sorting=ynt
+]{biblatex}
+\usepackage{caption, subcaption}
+\newcommand{\lgray}{\cellcolor{lightgray}}
+\newcommand{\gray}{\cellcolor{gray}}
+
+\addbibresource{bib.bib}
+
+\title{Estudo sobre modelagem e resolução do problema de corte de itens irregulares em faixa}
+\author{Bolsista: Nina  Cunha Pinheiro\\ Orientadora: Marina Andretta}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\begin{center}
+Relatório final relativo ao período de setembro de 2023 a agosto de 2024, referente ao projeto de iniciação científica do Programa Unificado de Bolsas vigente no mesmo período. 
+\end{center}
+
+\section{Introdução}
+
+O que é otimização? Otimização é uma área da matemática que tem como objetivo resolver problemas de alta complexidade buscando uma solução ótima para aquele problema, a melhor que formos capazes de encontrar.
+
+A modelagem de problemas, por sua vez, busca transformar problemas do mundo real em linguagem matemática, para futuramente os analisarmos e, por exemplo, otimizá-los.
+
+Nesse trabalho estudamos problemas de corte diferentes e ferramentas para resolver um problema de corte de itens irregulares em faixa, como NFPs e a heurística {\it Bottom-Left}.
+
+Na Seção~\ref{sec:outros} temos o exemplo de um problema de corte regular unidimensional e o de um bidimensional. Na Seção~\ref{sec:irregular} apresentamos um problema de corte de itens irregulares em faixa, que é o foco deste trabalho, e explicamos principalmente uma ferramenta para averiguar a sobreposição de polígonos. Na Seção~\ref{sec:heuristica} apresentamos a heurística implementada para resolvermos o problema apresentado na Seção~\ref{sec:irregular}. Na Seção~\ref{sec:experimentos}, apresentamos os experimentos numéricos realizados. Por fim, na Seção~\ref{sec:final} apresentamos as considerações finais.
+
+
+\section{Formulação de alguns problemas de corte} \label{sec:outros}
+
+Problemas de corte e empacotamento são aqueles em que mais de uma peça deve ser posicionada em um objeto maior de modo que otimizemos o desperdício de material. Nesse tipo de problema, é necessário ficar atento se não há sobreposição entre as peças e se nenhuma delas se encontra com parte fora do objeto maior. A seguir, veremos dois exemplos de formulação para problemas de corte diferentes.
+
+\subsection{Um problema de corte unidimensional}
+
+Para exemplo, vamos analisar um problema simples unidimensional, de corte de barras em barras menores. Essa seção teve muita influência e base no Livro \cite{arenales}. Tome quantas barras forem necessárias, cada uma de tamanho $L$, as quais queremos cortar em pedaços menores. Temos $m$ tamanhos diferentes de barras menores requeridas, em que $l_1, l_2, \dots, l_m$ são os diferentes tamanhos e $b_i$ é a quantidade de cada barra menor $l_i$ que precisamos obter no final, sendo $i = 1, \dots, m$.
+
+Cada barra $j$ que cortamos será dada pelo vetor $a_j = (a_{1j}, a_{2j}, \dots, a_{mj})$, em que $a_{ij}$ é a quantidade do tamanho $l_i$ na barra $j$. Para ilustrar, considere o corte de uma barra $1$ de tamanho $L$ nos pedaços $l_1$ (roxo), $l_2$ (rosa) e $l_4$ (verde). No caso, o vetor da barra seria dado por $a_1 = (2, 1, 0, 1, 0, \dots, 0)$. Dessa forma:
+    \begin{align*}
+        a_{11} = 2\\
+        a_{21} = 1\\
+        a_{31} = 0\\
+        a_{41} = 1\\
+        a_{51} = 0\\
+        \dots\\
+        a_{m1} = 0
+    \end{align*}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\textwidth]{Bobinas.png}
+\end{figure}
+
+Note que sobrou parte da barra, representada em cinza, que será descartada, dado que não temos, nesse caso, uma barra com tamanho menor para ser cortada naquele espaço.
+
+Para nossa formulação, cada componente $a_{ij}$ será uma variável. Nossa intenção ao final do problema será minimizar a quantidade de barras $j$ necessárias para cortar todas as barras menores, de forma a minimizar o desperdício causado pelos cortes.
+
+Temos então os seguintes três conjuntos de restrições:
+
+$$\sum_{j=1}^n a_{ij} = b_i, \;i = 1, \dots, m,$$
+que garantem que, para cada barra menor do tipo $i$, o somatório da quantidade dela em todas as barras $j$ utilizadas deve corresponder ao total $b_i$ requisitado.
+
+$$\sum_{i=1}^m a_{ij}l_i \leq L, \;j = 1, \dots, n,$$
+que garantem que, para cada barra $j$ cortada, o somatório do tamanho de cada barra menor $l_i$ multiplicado pelo número de vezes em que $i$ foi utilizada na barra $j$, deve ser menor ou igual ao tamanho total $L$ de cada barra $j$.
+
+$$\sum_{i=1}^m a_{ij} \leq Gx_j, \;j = 1, \dots, n,$$
+em que $G$ é um número suficientemente grande e $x_j$ é uma variável binária, ou seja, que só pode receber os valores $0$ ou $1$. Queremos que a variável $x_j$ tenha valor 1, caso a barra $j$ seja usada para cortar alguma barra menor, 0 caso contrário.
+Essas restrições foram criadas para garantir que, se a barra $j$ não for cortada (ou seja, se a soma de todos os números de vezes que cada tamanho $l_i$ na barra $j$ for igual a $0$), ela não seja contada no total de barras utilizadas. 
+
+Nossa função objetivo será de minimizar a soma de todos os $x_j$. A tendência do modelo será colocar todos os $x_j = 0$, mas para qualquer $j$ com a soma de seus $a_{ij}$ maior que $0$, a restrição obriga que $x_j$ seja $1$. Para que não haja problemas, $G$ precisa ser um número grande o suficiente para que, quando $x_j = 1$, o lado direito da inequação seja maior que o lado esquerdo. Uma opção para $G$ é considerá-lo $G = \sum_{i=1}^m bi$, o total de barras que queremos cortadas, dado que o número de barras de tamanho $L$ utilizadas nunca será maior que isso.
+
+O problema modelado fica da seguinte forma:
+
+\begin{equation*}
+   \begin{aligned}
+    \textrm{Minimizar} \quad & x_1 + x_2 + \dots + x_n\\
+    \textrm{sujeita a} \quad & \sum_{j=1}^n a_{ij} = b_i, \; i = 1, \dots, m,\\
+      &  \sum_{i=1}^m a_{ij}l_i \leq L, \; j = 1, \dots, n,   \\
+      &  \sum_{i=1}^m a_{ij} \leq Gx_j , \; j = 1, \dots, n,\\
+      & a_{ij} \geq 0, \; i = 1, \dots, m, \; j= 1, \dots, n,\\
+      & x_j \in \{0,1\}, \; j=1, \dots, n.\\
+    \end{aligned}
+\end{equation*}
+\;
+
+Como nesse modelo acima não estamos trabalhando com o posicionamentos das barras menores, e sim com quantas cabem na barra $L$, não precisamos nos preocupar com sobreposição, estamos supondo que cada barra menor será posicionada na extremidade da que foi colocada anteriormente.
+
+\subsection{Um problema de corte bidimensional}
+
+Outro problema de corte estudado foi o bidimensional onde temos $m$ retângulos de comprimento $c_i$ e altura $a_i (i=1, \dots, m)$ que queremos encaixar numa faixa, um recipiente retangular de altura $A$ e comprimento $C$ a ser minimizado (outra variável do problema), mas de modo que não haja sobreposição entre os retângulos.
+
+Começamos considerando que a faixa tem seu canto inferior esquerdo na coordenada $(0,0)$, que cada retângulo terá seu próprio canto inferior esquerdo como referência e que o posicionamento do retângulo $i$ dentro da faixa é dado por coordenadas $(x_i, y_i)$ que corresponderão a onde estará seu ponto de referência. Estas serão variáveis do nosso problema.
+
+Para garantir que todos os retângulos estão dentro da faixa temos as restrições:
+\begin{equation*}
+    \begin{aligned}
+        \quad & x_i \geq 0, \\
+        & y_i \geq 0, \\
+        & x_i + c_i \leq C, \\
+        & y_i + a_i \leq A, \\
+        & i = 1, \dots, m.
+    \end{aligned}
+\end{equation*}
+Para minimizarmos o comprimento da faixa, basta minimizar $C$.
+
+Por fim, para garantirmos que um retângulo não sobrepõe o outro, utilizamos as variáveis binárias $e_{ij},\; d_{ij}, \; b_{ij}, \;t_{ij}$ para indicar se o retângulo $i$ está à direita, à esquerda, em baixo ou no topo (respectivamente) do retângulo $j$. Para tal, tomamos $M$ como sendo um número grande e criamos as restrições:
+
+\begin{equation*}
+    \begin{aligned}
+        \quad & x_i + c_i \leq x_j + M(1-e_{ij}),\\
+        & x_j + c_j \leq x_i + M(1-d_{ij}),\\
+        & y_i + a_i \leq y_j + M(1-b_{ij}),\\
+        & y_j + a_j \leq y_i + M(1-t_{ij}),\\
+        & e_{ij} + d_{ij} + b_{ij} + t_{ij} \geq 1,\\
+        & i = 1, \dots, m, \; j = i+1, \dots, m.
+    \end{aligned}
+\end{equation*}
+\;
+
+%\textcolor{blue}{Tem problema ter colocado a variação do i e do j só no final de todas as equações? No modelo em si eu deixei certo}
+
+%\textcolor{red}{Não tem problema. Eu deixaria o bloquinho de restrições anterior seguindo o mesmo esquema deste}
+
+Se $i$ não estiver à esquerda de $j$ para algum par $i$ e $j$, por exemplo, a primeira restrição para esse par teria que receber $e_{ij} = 0$, para que a restrição seja satisfeita. Em compensação, se estivesse à esquerda, o valor de $e_{ij}$ poderia receber $0$ ou $1$. Isso não é um problema, pois queremos apenas garantir que pelo menos uma das variáveis binárias valha $1$, assegurado pela última das restrições.
+
+O modelo final é dado por:
+
+\begin{equation*}
+   \begin{aligned}
+    \textrm{Minimizar} \quad & C\\
+    \textrm{sujeita a} \quad & x_i + c_i \leq C, \; i = 1, \dots, m,\\
+        & y_i + a_i \leq A, \; i = 1, \dots, m, \\
+        & x_j + c_j \leq x_i + M(1-e_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m,\\
+        & x_j + c_j \leq x_i + M(1-d_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m,\\
+        & y_i + a_i \leq y_j + M(1-b_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m,\\
+        & y_j + a_j \leq y_i + M(1-t_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m, \\
+        & e_{ij} + d_{ij} + b_{ij} + t_{ij} \geq 1, \;i = 1, \dots, m, \;j = i+1, \dots, m, \\
+        &x_i \geq 0, \; y_i \geq 0, \;i = 1, \dots, m,\\
+        &e_{ij}, d_{ij}, b_{ij}, t_{ij} \in \{0,1\}, \;i = 1, \dots, m, \;j = i+1, \dots, m.\\
+    \end{aligned}
+\end{equation*}
+\;
+
+Como vimos com esses dois exemplos, problemas de otimização podem variar bastante e por isso são classificados em categorias como dimensionalidade, objetivo (encaixar objetos minimizando o desperdício do recipiente ou maximizando os ganhos dependendo de itens escolhidos se a capacidade do recipiente for fixa), e ainda entre características do recipiente (um que queremos minimizar o tamanho ou vários iguais ou diferentes onde queremos minimizar a quantidade) e características dos seus componentes (separados por número e homogeneidade das peças - dado que se temos um pequeno número de tipos de peças, podemos apenas criar um padrão e cópias dele no recipiente). 
+
+Os problemas ainda podem ser classificados em regulares, como os vistos nesta seção, ou irregulares, em que os objetos menores ou os maiores não têm formatos retangulares nem circulares. Um destes problemas será tratado na próxima seção.
+
+
+
+\section{Um problema de corte de itens irregulares} \label{sec:irregular}
+
+Até agora foram exibidos problemas mais simples por serem regulares. Porém, como podemos verificar se não há sobreposição entre itens quando estamos trabalhando com polígonos irregulares?
+
+No caso do problema de corte de itens irregulares em faixa, a faixa terá altura determinada $A$ e comprimento $C$ a ser minimizado, sendo que seu canto inferior esquerdo está posicionado em $(0,0)$. Ademais, é dado o número de vértices de cada polígono e o primeiro vértice informado é considerado o ponto de referência daquele polígono.
+
+Para garantir que todos os polígonos estão contidos na faixa, existem vários métodos utilizados na literatura, como por exemplo o Método Raster, o de Trigonometria Direta e a função D, explicados em \cite{geometry}. 
+
+Vejamos agora, com mais detalhes, as ferramentas \textit{No-Fit Polygon} e \textit{Inner-Fit Polygon}, que iremos utilizar adiante. O \textit{Inner-Fit Polygon} (IFP) delimita a área onde o ponto de referência de um determinado polígono pode ser colocado na faixa, de forma que o polígono esteja inteiramente contido na faixa. Como estamos trabalhando com uma faixa de altura fixa e comprimento inicialmente infinito, o IFP de qualquer polígono será um retângulo um pouco menor e possivelmente deslocado.
+
+Sendo $A$ a altura da faixa, para calcular o IFP de um polígono $D$, tomamos a coordenada $x$ do ponto mais à esquerda de $D$ como $e_D$, a coordenada $y$ do ponto mais alto de $D$ como $a_D$ e a coordenada $y$ do ponto mais baixo de $D$ como $b_D$. A partir desses valores e o ponto de referência de $D$ dado como $(x, y)$, definimos 
+\begin{equation*}
+    \begin{aligned}
+        \quad & \alpha_D = a_D - y,\\
+        & \beta_D = y - b_D,\\
+        & \gamma_D = x - e_D.
+    \end{aligned}
+\end{equation*}
+
+
+O $IFP_D$ será dado então por um retângulo com comprimento infinito, ponto inferior esquerdo $(\gamma_D, \beta_D)$ e altura $A - \beta_D -\alpha_D$. 
+
+
+No exemplo a seguir, o retângulo delimitado em preto é a faixa, queremos encaixar $D$ em seu interior e o IFP de $D$ está representado na figura pela área em azul. O ponto de referência é o em destaque azul, podemos observar que como existe um ponto com coordenada $y$ maior que o dele, o IFP está deslocado para baixo.
+
+
+\begin{figure} [H]
+    \centering
+    \includegraphics[width=.7\textwidth]{IFPd.png}
+    \caption{A área em azul é o IFP do polígono D.}
+    \label{fig:f1}
+\end{figure}
+
+
+O \textit{No-Fit Polygon} (NFP) é um polígono que  delimita a área onde o ponto de referência de um polígono pode ser posicionado para que esse não sobreponha um polígono já alocado.
+
+Uma das formas de construir um $NFP_{AB}$ é, a partir de $A$ fixo, transladar $B$ à sua volta e delimitar o $NFP$ com base no ponto de referência de $B$. Vale destacar que, no nosso problema, a orientação dos polígonos é fixa, ou seja, eles não rotacionam. Na Figura~\ref{fig:f4} temos o exemplo de dois polígonos $A$ e $B$ e o NFP de um em relação ao outro, denotados por $NFP_{AB}$ e $NFP_{BA}$. Note que, em geral, $NFP_{AB} \ne NFP_{BA}$.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{NFPab.png}
+        \caption{$B$ transladando $A$ em uma posição - $NFP_{AB}$.}
+        \label{fig:f2a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{NFPab(2).png}
+        \caption{$B$ transladando $A$ em outra posição - $NFP_{AB}$.}
+        \label{fig:f2b}
+    \end{subfigure} 
+    \hfill
+    \begin{subfigure}{.3\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{NFPba.png}
+        \caption{$A$ transladando $B$ - $NFP_{BA}$.}
+        \label{fig:f2c}
+    \end{subfigure}
+    \caption{$NFP_{AB}$ com $B$ transladando $A$ e $NFP_{BA}$.}
+    \label{fig:2}  
+\end{figure}
+
+Nas figuras \ref{fig:f2a} e \ref{fig:f2b} temos a representação do $NFP_{AB}$, na qual podemos observar $B$ transladando e seu ponto de referência (em destaque azul) traçando o \textit{No-Fit Polygon}. A Figura~\ref{fig:f2c} mostra como, ao invertermos qual dos polígonos está fixo e qual translada, há uma diferença no NFP resultante.
+
+Para que não haja sobreposição entre dois polígonos $A$ e $B$, o ponto de referência de um polígono $B$ pode estar em cima das arestas do $NFP_{AB}$ ou no seu exterior. Há sobreposição se o ponto de referência de $B$ for posicionado em qualquer lugar no interior do $NFP_{AB}$.
+
+\section{Heurística para resolução do problema de corte de itens irregulares} \label{sec:heuristica}
+
+Uma heurística é uma ferramenta para resolver problemas de otimização utilizada quando não é possível encontrar uma solução ótima em um tempo razoável. Ela tenta encontrar uma solução boa o suficiente em um tempo menor, sem, no entanto, garantir que uma solução ótima será encontrada.
+
+Nesse trabalho, estudamos a heurística \textit{Bottom-Left} (veja \cite{irregular}), a qual usamos para implementar o problema de corte de itens irregulares em faixa. 
+
+Dados $m$ polígonos ordenados segundo algum critério, a heurística {\it Bottom-Left} consiste em, seguindo essa ordem e com um polígono por vez, encontrar qual a coordenada mais à esquerda em que podemos alocar um polígono e, caso haja mais de um ponto, mais à baixo.
+
+Utilizando como exemplo as imagens a seguir, temos três polígonos $A$, $B$ e $D$ em uma faixa representada de amarelo (Figura~\ref{fig:f3a}). A ordem de posicionamento é alfabética e, dado que $A$ e $B$ já estão situados de acordo com a Figura~\ref{fig:f3b} e o IFP de $D$ é o mesmo da Figura~\ref{fig:f1}, vamos alocar $D$ utilizando o $NFP_{AD}$ e o $NFP_{BD}$ e o $IFP_D$.
+
+\begin{figure}[h]
+    \centering
+    \begin{subfigure}{.48\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{Poligs.png}
+        \caption{Polígonos $A$, $B$, $D$ e faixa.}
+        \label{fig:f3a}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{.48\textwidth}
+        \centering
+        \includegraphics[width=.9\textwidth]{Posicao.png}
+        \caption{Polígonos $A$ e $B$ alocados na faixa.}
+        \label{fig:f3b}
+    \end{subfigure}
+    \caption{Ilustração dos polígonos e seu posicionamento na faixa.}
+    \label{fig:f3}
+\end{figure}
+
+
+Para encontrar as possíveis posições para alocar o polígono $D$, calculamos as interseções das arestas de $NFP_{AD}$, $NFP_{BD}$ e $IFP_D$. Podemos observar na Figura~\ref{fig:f4} essas intersecções. Os pontos em vermelho são aqueles em que há uma intersecção, porém estão na área proibida de alguma das restrições de NFP e IFP: $P_2$ e $P_1$ estão fora do $IFP_D$ e $P_4$ está no interior do $NFP_{AD}$. Ademais, podemos ver que entre os dois pontos permitidos, que estão em verde, o mais à esquerda é aquele onde $D$ está posicionado, ou seja, de acordo com a heurística \textit{Bottom-Left}, o polígono está em sua posição final (ponto $P_3$).
+
+\begin{figure} [h]
+    \centering
+    \includegraphics[width= .8\textwidth]{NFPs.png}
+    \caption{Polígono $D$ alocado na sua posição final com base na heurística  \textit{Bottom-Left}, onde os pontos em vermelho são posições proibidas e os em verde são posições possíveis para o ponto de referência de $D$.}
+    \label{fig:f4}
+\end{figure}
+%////////////////////////////////////////////
+Agora, sabendo como funciona a heurística {\it Bottom-Left}, podemos implementar um código para resolver o problema de corte de itens irregulares em faixa. %Dados a altura $A$ da faixa infinita, o número $m$ de polígonos a serem empacotados (cada um representado por uma lista de vértices) e os NFPs entre cada par de polígonos,
+O programa, desenvolvido em linguagem C, lê um arquivo de nome {\tt gen\_data.txt} que contém a altura do recipiente, o número $m$ de itens diferentes e as $m$ linhas seguintes com o número e a demanda de cada item. Outro arquivo, {\tt itens.txt}, contém cada item numerado seguido do seu número de vértices e a sequência de vértices, sendo o primeiro sempre $(0,0)$, que também deve ser o ponto de referência utilizado para o cálculo dos  NFPs. Para os cálculos utilizados, é necessário que os vértices estejam ordenados no sentido anti-horário.
+O programa também lê $m^2$ arquivos de NFPs, cada um nomeado {\tt NFP\_x\_0\_y\_0.txt}, em que {\tt x} é o índice do item fixo e {\tt y} é o índice do item que translada ao seu redor.
+
+Depois de ler e armazenar esses dados em estruturas de dados (que envolvem matrizes, vetores e registros), o programa calcula a área, os pontos de menor e maior $x$ e menor e maior $y$ de cada item. Então, ordenando os itens de acordo om as áreas de forma decrescente, o programa aloca um item (e consequentemente todas as suas cópias) por vez.
+
+O passo a passo de alocar um item é checar primeiro se o ponto mais à esquerda e abaixo do IFP está disponível (a partir de uma função que verifica se o ponto está no interior do IFP e fora de todos os NFPs dos itens já alocados (fixo) com o que queremos posicionar (orbital)). Caso este ponto não esteja disponível para alocar o item, verificamos todas as intersecções entre as arestas do IFP do item e as arestas dos NFPs dos itens alocados (fixos) com o item a ser alocado (orbital), além das intersecções entre as arestas destes NFPs, dois a dois. Um ponto só passa pelo processo de verificação de validade caso seja melhor que o candidato atual, ou seja, mais à esquerda ou com mesmo $x$ e mais abaixo que o último ponto válido calculado, de acordo com a heurística {\it Bottom-Left}.
+
+Terminada a alocação de todos os itens, uma função imprime um código em Latex, usando a ferramenta TikZ, que mostra o leiaute obtido. O recipiente é representado em azul, os itens em vermelho claro e a linha vertical pontilhada indica a largura alcançada pela alocação.
+
+\begin{comment}
+
+A área foi calculada utilizando a Fórmula da Área de Gauss, dada por: 
+$$2A = 
+    \begin{vmatrix}
+        x_1 & x_2\\
+        y_1 & y_2
+    \end{vmatrix} +
+    \begin{vmatrix}
+        x_2 & x_3\\
+        y_2 & y_3
+       \end{vmatrix} + \dots +
+    \begin{vmatrix}
+        x_n & x_1\\
+        y_n & y_1
+    \end{vmatrix}$$
+    
+E a fórmula utilizada para a intersecção de dois segmentos $AB = (x_2 - x_1, y_2 - y_1)$ e $CD = (x_4 - x_3, y_4 - y_3)$ foi:
+
+\begin{equation*} \label{eq1}
+   \begin{aligned}
+    denom = ((x_4-x_3)*(y_2-y_1))-((y_4-y_3)*(x_2-x_1))\\
+    num1 = ((x_4-x_3)*(y_3-y_1))-((y_4-y_3)*(x_3-x_1))\\
+    num2 = ((x_2-x_1)*(y_3-y_1))-((y_2-y_1)*(x_3-x_1))\\
+    \end{aligned}
+\end{equation*}
+
+Caso $denom = num1 = num2 = 0$, $A, B, C e D$ são pontos colineares, checamos se se interceptam e consideramos as intersecções possíveis como sendo as do meio. se 
+\end{comment}
+
+O código desenvolvido ao longo deste trabalho de Iniciação Científica pode ser acessado em \url{https://sites.icmc.usp.br/andretta/pinheiro-2024/}.
+
+\section{Experimentos numéricos} \label{sec:experimentos}
+
+Para testar o código implementado, executamos a heurística {\it Bottom-Left} para resolver seis instâncias clássicas da literatura: as instâncias {\it fu}, {\it three} e variações desta.\footnote{\url{https://www.euro-online.org/websites/esicup/data-sets/}, acessado em 13/09/2024.} 
+
+Os experimentos foram executados em um computador de 8GB de memória, processador Intel® Core™ i5-8250U CPU @ 1.60GHz × 8 e Sistema Operacional Ubuntu 22.04.4 LTS.  
+
+Na Tabela~\ref{resultado_inst} podemos observar um resumo dos resultados obtidos pela heurística {\it Bottom-Left} na resolução das instâncias selecionadas.  Na coluna {\it Instâncias} temos o nome de cada instância que foi aplicada no {\it Bottom-Left}, a {\it itens distintos} representa a quantidade de itens, a {\it total de itens} mostra a quantidade de itens considerando a demanda de cada item, a {\it altura} é a altura do recipiente fixada pela instância e a {\it largura} é a que foi obtida pela heurística. %\textcolor{red}{EXPLICAR CADA COLUNA DA TABELA}. O tempo de execução para todas as instâncias foi menor que um segundo.
+
+\begin{table}[!htbp]
+
+  \centering
+    \small{
+      \begin{tabular}{|c|c|c|c|r|}
+        \hline
+        \multicolumn{ 1}{|c|}{\textbf{Instâncias}}& \multicolumn{1}{c|}{\textbf{itens distintos}} & \multicolumn{1}{c|}{\textbf{total de itens}} & \multicolumn{1}{c|}{\textbf{altura}}&\multicolumn{1}{c|}{\textbf{largura}}\\
+        \hline
+        \multicolumn{ 1}{|c|}{\textbf{fu}} &    12     &    12    &   38    &   42,00    \\
+        \hline 
+        \multicolumn{ 1}{|c|}{\textbf{three}} &    3    &    3    &    7    &    7,00    \\
+        \hline 
+        \multicolumn{ 1}{|c|}{\textbf{threep2}} &    3    &    6    &    7    &    10,67    \\
+        \hline
+        \multicolumn{ 1}{|c|}{\textbf{threep2w9}} &    3    &    6    &    9    &    9,67    \\
+        \hline
+        \multicolumn{ 1}{|c|}{\textbf{threep3}} &    3    &    9    &    7    &    18,33    \\
+        \hline
+        \multicolumn{ 1}{|c|}{\textbf{threep3w9}} &    3    &    9    &    9    &    12,33    \\
+        \hline
+      \end{tabular}}
+  \caption{Resultado do {\it Bottom-Left} na resolução das instâncias}
+    \label{resultado_inst}
+\end{table}
+
+Na Figura~\ref{fig:f5} temos as imagens dos leiautes obtidos pela heurística implementada para cada instância.
+
+\begin{figure}[!h]
+    \centering
+    \begin{subfigure}{0.98\textwidth}
+        \centering
+        \label{fig:f5a}
+        %\vspace{2cm}
+        \begin{tikzpicture}[scale=0.1]
+            \filldraw [color=black, fill=red!60]  (10.000,23.000) -- (20.000,23.000) -- (20.000,33.000) -- (10.000,33.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (14.000,0.000) -- (24.000,0.000) -- (24.000,10.000) -- (14.000,10.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,14.000) -- (14.000,14.000) -- (14.000,23.000) -- (0.000,23.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (28.000,18.000) -- (42.000,18.000) -- (35.000,25.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (28.000,18.000) -- (28.000,9.000) -- (42.000,18.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,0.000) -- (14.000,0.000) -- (14.000,14.000) -- (0.000,14.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (24.000,0.000) -- (34.000,4.000) -- (34.000,9.000) -- (24.000,9.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (34.000,0.000) -- (39.000,0.000) -- (39.000,9.000) -- (34.000,9.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (14.000,10.000) -- (28.000,10.000) -- (28.000,24.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,23.000) -- (10.000,23.000) -- (10.000,33.000) -- (0.000,37.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (14.000,22.000) -- (18.000,14.000) -- (22.000,22.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (20.000,24.000) -- (34.000,24.000) -- (27.000,36.000) -- cycle;
+            \draw[blue, very thick] (50.40, 0) -- (0,0) -- (0,38.00) -- (50.40, 38.00);
+            \draw[dotted, very thick] (42.00, 0) -- (42.00,38.00);
+        \end{tikzpicture}
+        \caption{{\it fu} (largura 42,0)}
+        \vspace{.5cm}
+    \end{subfigure}
+    \begin{subfigure}{0.48\textwidth}
+        \label{fig:f5b}
+        \begin{tikzpicture}[scale=0.48]
+            \filldraw [color=black, fill=red!60]  (0.000,5.000) -- (2.000,3.000) -- (4.000,5.000) -- (2.000,7.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,3.000) -- (0.000,0.000) -- (3.000,0.000) -- (3.000,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (3.000,0.000) -- (7.000,0.000) -- (5.000,3.000) -- cycle;
+            \draw[blue, very thick] (8.40, 0) -- (0,0) -- (0,7.00) -- (8.40, 7.00);
+            \draw[dotted, very thick] (7.00, 0) -- (7.00,7.00);
+        \end{tikzpicture}
+        \caption{{\it Three} (largura 7,0)}
+        \vspace{.5cm}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{0.48\textwidth}
+        \label{fig:f5c}
+        \begin{tikzpicture}[scale = 0.48]
+            \filldraw [color=black, fill=red!60]  (3.000,2.000) -- (5.000,0.000) -- (7.000,2.000) -- (5.000,4.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (4.000,5.000) -- (6.000,3.000) -- (8.000,5.000) -- (6.000,7.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,3.000) -- (0.000,0.000) -- (3.000,0.000) -- (3.000,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,6.000) -- (0.000,3.000) -- (3.000,3.000) -- (3.000,6.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (5.667,0.000) -- (9.667,0.000) -- (7.667,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (6.667,3.000) -- (10.667,3.000) -- (8.667,6.000) -- cycle;
+            \draw[blue, very thick] (12.80, 0) -- (0,0) -- (0,7.00) -- (12.80, 7.00);
+            \draw[dotted, very thick] (10.67, 0) -- (10.67,7.00);
+        \end{tikzpicture}
+        \caption{{\it Threep2} (largura 10,67)}
+        \vspace{.5cm}
+    \end{subfigure}
+    \begin{subfigure}{.48\textwidth}
+        \label{fig:f5d}
+        \begin{tikzpicture}[scale=0.47]
+            \filldraw [color=black, fill=red!60]  (2.000,7.000) -- (4.000,5.000) -- (6.000,7.000) -- (4.000,9.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (3.000,2.000) -- (5.000,0.000) -- (7.000,2.000) -- (5.000,4.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,3.000) -- (0.000,0.000) -- (3.000,0.000) -- (3.000,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,6.000) -- (0.000,3.000) -- (3.000,3.000) -- (3.000,6.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (4.000,4.000) -- (8.000,4.000) -- (6.000,7.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (5.667,0.000) -- (9.667,0.000) -- (7.667,3.000) -- cycle;
+            \draw[blue, very thick] (11.60, 0) -- (0,0) -- (0,9.00) -- (11.60, 9.00);
+            \draw[dotted, very thick] (9.67, 0) -- (9.67,9.00);
+        \end{tikzpicture}
+        \caption{{\it Threep2w9} (largura 9,67)}
+        \vspace{.5cm}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{.48\textwidth}
+        \label{fig:f5e}
+        \begin{tikzpicture}[scale=0.47]
+            \filldraw [color=black, fill=red!60]  (3.000,2.000) -- (5.000,0.000) -- (7.000,2.000) -- (5.000,4.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (3.000,6.000) -- (5.000,4.000) -- (7.000,6.000) -- (5.000,8.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (5.000,4.000) -- (7.000,2.000) -- (9.000,4.000) -- (7.000,6.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,3.000) -- (0.000,0.000) -- (3.000,0.000) -- (3.000,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,6.000) -- (0.000,3.000) -- (3.000,3.000) -- (3.000,6.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,9.000) -- (0.000,6.000) -- (3.000,6.000) -- (3.000,9.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (6.000,0.000) -- (10.000,0.000) -- (8.000,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (7.000,6.000) -- (11.000,6.000) -- (9.000,9.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (8.333,3.000) -- (12.333,3.000) -- (10.333,6.000) -- cycle;
+            \draw[blue, very thick] (14.80, 0) -- (0,0) -- (0,9.00) -- (14.80, 9.00);
+            \draw[dotted, very thick] (12.33, 0) -- (12.33,9.00);
+        \end{tikzpicture}
+        \caption{{\it Threep3w9} (largura 12,33)}
+        \vspace{.5cm}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}{.98\textwidth}
+        \centering
+        \begin{tikzpicture}[scale=0.48]
+            \filldraw [color=black, fill=red!60]  (3.000,5.000) -- (5.000,3.000) -- (7.000,5.000) -- (5.000,7.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (5.500,3.500) -- (7.500,1.500) -- (9.500,3.500) -- (7.500,5.500) -- cycle;
+            \filldraw [color=black, fill=red!60]  (8.000,2.000) -- (10.000,0.000) -- (12.000,2.000) -- (10.000,4.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,3.000) -- (0.000,0.000) -- (3.000,0.000) -- (3.000,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (0.000,6.000) -- (0.000,3.000) -- (3.000,3.000) -- (3.000,6.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (3.000,3.000) -- (3.000,0.000) -- (6.000,0.000) -- (6.000,3.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (9.000,4.000) -- (13.000,4.000) -- (11.000,7.000) -- cycle;
+            \filldraw [color=black, fill=red!60]  (11.800,2.200) -- (15.800,2.200) -- (13.800,5.200) -- cycle;
+            \filldraw [color=black, fill=red!60]  (14.333,0.000) -- (18.333,0.000) -- (16.333,3.000) -- cycle;
+            \draw[blue, very thick] (21.00, 0) -- (0,0) -- (0,7.00) -- (21.00, 7.00);
+            \draw[dotted, very thick] (18.33, 0) -- (18.33,7.00);
+        \end{tikzpicture}
+        \caption{{\it Threep3} (largura 18,33)}
+        \label{fig:f5f}
+    \end{subfigure}
+    \caption{Imagem das soluções encontradas pela heurística {\it Bottom-Left} para cada instância.}
+    \label{fig:f5}
+\end{figure}
+
+Podemos ver, pelos resultados apresentados, que a heurística implementada, apesar de não garantir que uma solução ótima seja encontrada, foi capaz de encontrar boas soluções, com um tempo de execução muito pequeno.
+
+\section{Considerações finais} \label{sec:final}
+
+Este trabalho consistiu em estudar otimização linear, nos casos contínuo e inteiro, focando na modelagem. Estudamos a modelagem de um problema de corte bidimensional regular, em que os itens são retângulos, para então entender como seria feita a resolução de um problema de corte de itens irregulares (polígonos convexos) em faixa. 
+
+Para tal problema, foi necessário estudar técnicas para verificar a sobreposição de itens (particularmente, o {\it No-Fit Polygon}) e uma heurística para resolução do problema, que foi implementada em linguagem C (a heurística {\it Bottom-Left}). Durante a execução do trabalho, avaliamos ser mais interessante desenvolver o código em C, aprendendo a linguagem e alguns detalhes de implementação, ao invés de utilizar um {\it solver} para resolver o modelo do problema, por isso a Etapa 6: ``Implementação do modelo estudado para resolução por um {\it solver} disponível, como Gurobi ou CPLEX'' do cronograma inicial não foi concluída.
+
+A heurística {\it Bottom-Left} foi implementada, em linguagem C, e experimentos numéricos foram realizados em um pequeno conjunto de instâncias clássicas da literatura. Estes experimentos mostraram que a heurística foi capaz de encontrar boas soluções, em um tempo computacional muito pequeno.
+
+Para a continuação desse trabalho futuramente, recomendamos que sejam feitos mais experimento, com outras instâncias (principalmente com maior quantidade e variedade de itens) e ordenações dos itens diferentes. Indicamos também estender a implementação computacional para lidar com polígonos não convexos. Uma meta-heurística pode ser estudada e implementada para obter resultados ainda melhores.
+
+%\textcolor{red}{FALTA INCLUIR O LIVRO DO ARENALES. PODE COLOCAR UMA REFERENCIA PARA ELE LÁ NO COMEÇO, QUANDO FALA DO CORTE UNIDIMENSIONAL, POR EXEMPLO.}
+
+%O cronograma a seguir representa as atividades previstas durante a Iniciação Científica, presente no projeto original e visando a alcançar os objetivos propostos neste projeto. As etapas cumpridas são numeradas a seguir e a Tabela~\ref{cronograma} apresenta o período proposto para realização de cada etapa. Em cinza mais escuro estão as tarefas cumpridas e, em cinza mais claro, as que foram reavaliadas e não realizadas.
+
+\clearpage
+
+
+% \bibliography{bib}
+\printbibliography
+
+\end{document}
