@@ -66,8 +66,7 @@ Instituto de Ciências Matemáticas e de Computação\par}
 \vspace{1.5cm}
 {\large Nina Cunha Pinheiro\par}
 \vspace*{\fill}
-{\small Trabalho de Conclusão de Curso\\
-Relatórios finais de Iniciação Científica (PUB): set/2023–ago/2024 e set/2024–ago/2025\par}
+{\small Trabalho de Conclusão de Curso, elaborado a partir dos relatórios finais de Iniciação Científica (Programa Unificado de Bolsas) dos períodos de setembro de 2023 a agosto de 2024 e de setembro de 2024 a agosto de 2025.\par}
 \vspace{0.5cm}
 {\normalsize Orientadora: Profa. Dra. Marina Andretta\par}
 \vspace{1cm}
@@ -88,9 +87,63 @@ Nesse trabalho estudamos o problema de corte de itens irregulares em faixa, que 
 
 Na Seção~\ref{sec:irregular} mostramos o problema de corte de itens irregulares em faixa e explicamos principalmente as ferramentas utilizadas para garantir que os itens não se sobreponham e permaneçam no interior da faixa. Na Seção~\ref{sec:BL} detalhamos a heurística construtiva {\it Bottom-Left} implementada para resolvermos o problema apresentado na Seção~\ref{sec:irregular}, juntamente com alguns resultados de seus testes na Seção~\ref{sec:experimentosbl}. Na Seção~\ref{sec:BRKGA} detalhamos o funcionamento e implementação da meta-heurística {\it BRKGA} para a resolução do mesmo problema e analisamos os resultados obtidos na Seção~\ref{sec:experimentosBRKGA}. Na Seção~\ref{sec:comp}, comparamos os resultados dos experimentos numéricos de ambas as heurísticas e por fim, na Seção~\ref{sec:cons_finais}, apontamos as considerações finais e possibilidades de trabalhos futuros.
 
-\section{Formulação de um problema de corte de itens irregulares} \label{sec:irregular}
 
-Problemas de corte ou empacotamento são aqueles em que se deve organizar uma série de objetos em um recipiente de forma a minimizar desperdício. Como forma de resolução, inicialmente o problema é interpretado e modelado em linguagem matemática. Em seguida, pode ser resolvido de forma exata, encontrando uma solução ótima, ou aproximada, com uma solução boa o suficiente para as especificações, utilizada para diminuir os gastos com tempo e capacidade de processamento provindas da primeira.
+\section{Formulação de alguns problemas de corte} \label{sec:outros}
+
+Problemas de corte e empacotamento são aqueles em que mais de uma peça deve ser posicionada em um objeto maior de modo que otimizemos o desperdício de material. Nesse tipo de problema, é necessário ficar atento se não há sobreposição entre as peças e se nenhuma delas se encontra com parte fora do objeto maior. Em um primeiro projeto de Iniciação Científica, estudamos a modelagem desses problemas começando por casos mais simples, para depois chegar ao problema de itens irregulares, foco deste trabalho. A seguir, veremos dois exemplos de formulação para problemas de corte diferentes.
+
+\subsection{Um problema de corte unidimensional}
+
+Para exemplo, vamos analisar um problema simples unidimensional, de corte de barras em barras menores. Esta seção teve muita influência e base no livro \cite{arenales}. Tome quantas barras forem necessárias, cada uma de tamanho $L$, as quais queremos cortar em pedaços menores. Temos $m$ tamanhos diferentes de barras menores requeridas, em que $l_1, l_2, \dots, l_m$ são os diferentes tamanhos e $b_i$ é a quantidade de cada barra menor $l_i$ que precisamos obter no final, sendo $i = 1, \dots, m$.
+
+Cada barra $j$ que cortamos será dada pelo vetor $a_j = (a_{1j}, a_{2j}, \dots, a_{mj})$, em que $a_{ij}$ é a quantidade do tamanho $l_i$ na barra $j$. Para nossa formulação, cada componente $a_{ij}$ será uma variável. Nossa intenção ao final do problema será minimizar a quantidade de barras $j$ necessárias para cortar todas as barras menores, de forma a minimizar o desperdício causado pelos cortes. O problema modelado fica da seguinte forma:
+\begin{equation*}
+   \begin{aligned}
+    \textrm{Minimizar} \quad & x_1 + x_2 + \dots + x_n\\
+    \textrm{sujeita a} \quad & \sum_{j=1}^n a_{ij} = b_i, \; i = 1, \dots, m,\\
+      &  \sum_{i=1}^m a_{ij}l_i \leq L, \; j = 1, \dots, n,   \\
+      &  \sum_{i=1}^m a_{ij} \leq Gx_j , \; j = 1, \dots, n,\\
+      & a_{ij} \in \mathbb{Z}_{\geq 0}, \; i = 1, \dots, m, \; j= 1, \dots, n,\\
+      & x_j \in \{0,1\}, \; j=1, \dots, n.\\
+    \end{aligned}
+\end{equation*}
+
+A primeira restrição garante que, para cada barra menor do tipo $i$, o somatório da quantidade dela em todas as barras $j$ utilizadas corresponda ao total $b_i$ requisitado. A segunda garante que, para cada barra $j$ cortada, o somatório do tamanho de cada barra menor $l_i$ multiplicado pelo número de vezes em que $i$ foi utilizada na barra $j$ seja menor ou igual ao tamanho total $L$ de cada barra $j$.
+
+Na terceira, $G$ é um número suficientemente grande e $x_j$ é uma variável binária, ou seja, que só pode receber os valores $0$ ou $1$. Queremos que a variável $x_j$ tenha valor 1, caso a barra $j$ seja usada para cortar alguma barra menor, 0 caso contrário. Essa restrição foi criada para garantir que, se a barra $j$ não for cortada, ela não seja contada no total de barras utilizadas. Como o objetivo é minimizar a soma de todos os $x_j$, a tendência do modelo será colocar todos os $x_j = 0$, mas para qualquer $j$ com a soma de seus $a_{ij}$ maior que $0$, a restrição obriga que $x_j$ seja $1$. Para que não haja problemas, $G$ precisa ser um número grande o suficiente para que, quando $x_j = 1$, o lado direito da inequação seja maior que o lado esquerdo. Uma opção para $G$ é considerá-lo $G = \sum_{i=1}^m b_i$, o total de barras que queremos cortadas, dado que o número de barras de tamanho $L$ utilizadas nunca será maior que isso. \textcolor{red}{revisar paragrafo, ta muito grande}
+
+Como nesse modelo não estamos trabalhando com o posicionamento das barras menores, e sim com quantas cabem na barra $L$, não precisamos nos preocupar com sobreposição, estamos supondo que cada barra menor será posicionada na extremidade da que foi colocada anteriormente.
+
+\subsection{Um problema de corte bidimensional}
+
+Passamos então a um problema um pouco mais complexo, o bidimensional, em que agora a posição de cada item importa e é preciso garantir que não haja sobreposição. Nele, temos $m$ retângulos de comprimento $c_i$ e altura $a_i$ $(i=1, \dots, m)$ que queremos encaixar numa faixa, um recipiente retangular de altura $A$ e comprimento $C$ a ser minimizado (outra variável do problema).
+
+Começamos considerando que a faixa tem seu canto inferior esquerdo na coordenada $(0,0)$, que cada retângulo terá seu próprio canto inferior esquerdo como referência e que o posicionamento do retângulo $i$ dentro da faixa é dado por coordenadas $(x_i, y_i)$ que corresponderão a onde estará seu ponto de referência. Estas serão variáveis do nosso problema.
+
+Para garantirmos que um retângulo não sobrepõe o outro, utilizamos as variáveis binárias $e_{ij},\; d_{ij}, \; b_{ij}, \;t_{ij}$ para indicar se o retângulo $i$ está à esquerda, à direita, em baixo ou no topo (respectivamente) do retângulo $j$. Para tal, tomamos $M$ como sendo um número grande. O modelo é dado por:
+\begin{equation*}
+   \begin{aligned}
+    \textrm{Minimizar} \quad & C\\
+    \textrm{sujeita a} \quad & x_i + c_i \leq C, \; i = 1, \dots, m,\\
+        & y_i + a_i \leq A, \; i = 1, \dots, m, \\
+        & x_i + c_i \leq x_j + M(1-e_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m,\\
+        & x_j + c_j \leq x_i + M(1-d_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m,\\
+        & y_i + a_i \leq y_j + M(1-b_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m,\\
+        & y_j + a_j \leq y_i + M(1-t_{ij}), \;i = 1, \dots, m, \;j = i+1, \dots, m, \\
+        & e_{ij} + d_{ij} + b_{ij} + t_{ij} \geq 1, \;i = 1, \dots, m, \;j = i+1, \dots, m, \\
+        &x_i \geq 0, \; y_i \geq 0, \;i = 1, \dots, m,\\
+        &e_{ij}, d_{ij}, b_{ij}, t_{ij} \in \{0,1\}, \;i = 1, \dots, m, \;j = i+1, \dots, m.\\
+    \end{aligned}
+\end{equation*}
+
+As duas primeiras restrições, junto com $x_i \geq 0$ e $y_i \geq 0$, garantem que todos os retângulos estão dentro da faixa e, para minimizarmos o comprimento da faixa, basta minimizar $C$. As quatro restrições seguintes e a última delas garantem que um retângulo não sobreponha o outro. Se $i$ não estiver à esquerda de $j$ para algum par $i$ e $j$, por exemplo, a primeira dessas restrições para esse par teria que receber $e_{ij} = 0$, para que a restrição seja satisfeita. Em compensação, se estivesse à esquerda, o valor de $e_{ij}$ poderia receber $0$ ou $1$. Isso não é um problema, pois queremos apenas garantir que pelo menos uma das variáveis binárias valha $1$, assegurado pela restrição $e_{ij} + d_{ij} + b_{ij} + t_{ij} \geq 1$.
+
+Como vimos com esses dois exemplos, problemas de corte podem variar bastante e por isso são classificados em categorias, como a dimensionalidade, o objetivo e as características do recipiente e das peças. Os problemas ainda podem ser classificados em regulares, como os vistos nesta seção, ou irregulares, em que os objetos menores ou os maiores não têm formatos retangulares nem circulares. Note que, no modelo bidimensional, a não sobreposição pôde ser expressa por simples comparações entre coordenadas porque os itens são retângulos; para itens irregulares isso deixa de ser possível, o que exige ferramentas geométricas específicas. Um destes problemas será tratado na próxima seção.
+
+
+\section{Um problema de corte de itens irregulares} \label{sec:irregular}
+
+Até agora foram exibidos problemas mais simples por serem regulares. Porém, como podemos verificar se não há sobreposição entre itens quando estamos trabalhando com polígonos irregulares? Para responder, precisamos antes definir o problema que queremos resolver.
 
 Ao longo desse trabalho queremos encontrar soluções possíveis e relativamente boas para o problema que consiste em posicionar $m$ itens irregulares (representados por polígonos), cada um com determinado número de cópias (quantas vezes um mesmo item deve ser alocado), em uma faixa de comprimento infinito (um retângulo com um lado de tamanho fixo e o outro que se estende o quanto for necessário), sem sobreposição, de forma a minimizar o comprimento da região da faixa utilizada. Observe na Figura~\ref{fig:f1} um exemplo de uma solução desse problema de corte, mais detalhes são apresentados na Seção~\ref{sec:experimentosbl}.
 
@@ -252,7 +305,7 @@ Ao longo desse trabalho queremos encontrar soluções possíveis e relativamente
 
 O problema de corte em faixa reflete o dilema de muitas indústrias, como a têxtil, ao recortar modelos de roupa de um rolo de tecido, ou a automobilística, recortando itens de carro em uma chapa de metal. Caso um polígono sobreponha outro os itens recortados se tornam inúteis quando o problema é aplicado à vida real, como nestes casos industriais, que é um dos motivos pelo qual não pode haver sobreposição de itens.
 
-Dessa forma, é imprescindível estar atento se na alocação final não haja dois itens que estão ocupando um mesmo espaço e se todos se encontram no interior do recipiente - a solução seria inutilizável caso contrário. Em desafios bidimensionais, em que os itens são polígonos irregulares, com os quais vamos trabalhar, para averiguar que tais necessidades são atendidas utilizamos os métodos {\it Inner-Fit Polygon} (IFP) e {\it No-Fit Polygon} (NFP). Existem outros métodos para a verificação, como os encontrados em \cite{geometry}. Para usar tanto o IFP quanto o NFP, utilizamos algum ponto $P$ do item para localizá-lo, dado como ponto de referência e cuja posição final indica quanto os outros pontos do item serão deslocados.
+Dessa forma, é imprescindível estar atento se na alocação final não haja dois itens que estão ocupando um mesmo espaço e se todos se encontram no interior do recipiente - a solução seria inutilizável caso contrário. Em desafios bidimensionais, em que os itens são polígonos irregulares, com os quais vamos trabalhar, para averiguar que tais necessidades são atendidas utilizamos os métodos {\it Inner-Fit Polygon} (IFP) e {\it No-Fit Polygon} (NFP). Existem outros métodos para a verificação, como o Método Raster, o de Trigonometria Direta e a função D, explicados em \cite{geometry}. Para usar tanto o IFP quanto o NFP, utilizamos algum ponto $P$ do item para localizá-lo, dado como ponto de referência e cuja posição final indica quanto os outros pontos do item serão deslocados.
 
 O IFP de um item $X$ é o polígono dado por toda área do recipiente onde o ponto de referência de $X$ pode ser colocado de forma que este item esteja contido por completo no recipiente. No problema com o qual estamos trabalhando o recipiente é a faixa de comprimento infinito, um retângulo de altura $A$ determinada e comprimento $C$ a ser minimizado, com o ponto inferior esquerdo posicionado em $(0,0)$.
 
@@ -264,7 +317,8 @@ O IFP de um item $X$ é o polígono dado por toda área do recipiente onde o pon
     \label{fig:f2}
 \end{figure}
 
-No exemplo da Figura~\ref{fig:f2}, o retângulo delimitado em preto é a faixa e queremos posicionar $O$ em seu interior. O $IFP_O$ está representado na figura pela área em verde e o ponto de referência $P$ é o em destaque laranja. Na figura, $H_1$ e $H_2$ representam, respectivamente, as distâncias entre $P$ e o ponto mais baixo de $O$ e entre $P$ e o ponto mais alto de $O$, e $h$ é a distância vertical restante para posicionar $P$. Além disso, $P$ só pode ser colocado horizontalmente à direita de $C_1$, distância entre $P$ e o ponto mais à esquerda de $O$. No desenho, $O$ estaria alocado no ponto mais à esquerda e abaixo possível.
+No exemplo da Figura~\ref{fig:f2}, o retângulo delimitado em preto é a faixa e queremos posicionar $O$ em seu interior. O $IFP_O$ está representado na figura pela área em verde e o ponto de referência $P$ é o em destaque laranja. Na figura, $H_1$ e $H_2$ representam, respectivamente, as distâncias entre $P$ e o ponto mais baixo de $O$ e entre $P$ e o ponto mais alto de $O$, e $h$ é a distância vertical restante para posicionar $P$. Além disso, $P$ só pode ser colocado horizontalmente à direita de $C_1$, distância entre $P$ e o ponto mais à esquerda de $O$. 
+No desenho, $O$ estaria alocado no ponto mais à esquerda e abaixo possível. Em resumo, com a faixa de canto inferior esquerdo em $(0,0)$, o $IFP_O$ é um retângulo de comprimento infinito, com canto inferior esquerdo em $(C_1, H_1)$ e altura $$h = A - H_1 - H_2.$$ Ou seja, o ponto $P$ deve ficar a pelo menos $H_1$ da base da faixa e a pelo menos $H_2$ do seu topo.
 
 Agora que analisamos a relação de $O$ com o recipiente, considere que queremos entender a interação entre os polígonos $M$ e $O$ presentes na Figura~\ref{fig:f3a}, para garantir que um não irá sobrepor o outro. Uma forma de fazer isso é manter $M$ parado e, garantindo que $O$ encoste nele o tempo todo, transladar $O$ ao seu redor, trançando o caminho feito pelo ponto de referência de $O$. O polígono formado por esse caminho é o que chamamos de {\it No-Fit Polygon (NFP)} e seu interior indica onde haverá sobreposição entre os dois, se colocarmos o ponto de referência de $O$. Caso o ponto de referência esteja no exterior do NFP, $O$ e $M$ não se encostarão.
 
@@ -399,7 +453,9 @@ Na Figura~\ref{fig:f10} temos então o polígono $O$ em sua posição final de a
 \end{figure}
 
 
-Agora que temos todas as ferramentas de alocação bem sedimentadas, vamos para a resolução em si. Para resolver o problema de corte de itens irregulares em faixa foi implementado um código em linguagem C com a heurística {\it Bottom-Left}. O programa lê em um arquivo ``general\_data.txt'' a altura $A$ da faixa, o número $m$ de itens e $m$ linhas seguintes contendo o número de cópias de cada item. Em seguida, é lida uma lista de $m$ arquivos ``pieceX.txt'' que diz o número de partes do item $X$, representado por um número de 1 a $m$, e lista os vértices em sentido anti-horário para cada parte, considerando que o primeiro ponto da primeira parte é $(0,0)$, que é o ponto de referência de $X$.
+Agora que temos todas as ferramentas de alocação bem sedimentadas, vamos para a resolução em si. Para resolver o problema de corte de itens irregulares em faixa foi implementado um código em linguagem C com a heurística {\it Bottom-Left}. Esse código é uma versão ampliada da implementada no primeiro projeto de Iniciação Científica, que ordenava os itens apenas por área decrescente, alocava cada item com todas as suas cópias de uma só vez e foi testada em seis instâncias.\footnote{O código dessa primeira versão pode ser acessado em \url{https://sites.icmc.usp.br/andretta/pinheiro-2024/}.} Nesta etapa, ampliamos o código para considerar doze critérios de ordenação e tratar polígonos não convexos, com as cópias de cada item ordenadas individualmente, e o aplicamos a vinte e nove instâncias.
+
+O programa lê em um arquivo ``general\_data.txt'' a altura $A$ da faixa, o número $m$ de itens e $m$ linhas seguintes contendo o número de cópias de cada item. Em seguida, é lida uma lista de $m$ arquivos ``pieceX.txt'' que diz o número de partes do item $X$, representado por um número de 1 a $m$, e lista os vértices em sentido anti-horário para cada parte, considerando que o primeiro ponto da primeira parte é $(0,0)$, que é o ponto de referência de $X$.
 
 Por último, o programa lê $m^2$ arquivos ``NFP\_i\_0\_j\_0.txt'' com as partes e vértices de cada NFP, construídos pensando no ponto de referência do item $i$ em $(0,0)$ e o item $j$ transladando ao seu redor, ambos com rotação de $0$ graus.
 
@@ -740,7 +796,6 @@ Os resultados nos levam a acreditar que o viés de $0,7$ aplicado no cruzamento 
 
 A seguir, na Tabela~\ref{tab:t4} temos a comparação entre os dois resultados da {\it BRKGA} e os quatro melhores da {\it BL}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, os grupos de duas colunas apresentam os resultado de cada execução com o respectivo método utilizado no topo da coluna. A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística correspondente, em que o valor em destaque em cada linha é o menor resultado obtido e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância.
 
-%\textcolor{red}{ATÉ AGORA ESTAVA FALANDO EM COMPRIMENTO, MAS A PARTIR DAQUI VIROU . DEIXA TUDO IGUAL.}
 
 É possível perceber que em todas as instâncias o comprimento final obtida pela {\it BRKGA} foi melhor que todas da {\it BL} apresentadas, incluindo as outras oito variações que se encontram nas tabelas~\ref{tab:t1} e~\ref{tab:t2}. O único caso em que o resultado da {\it BRKGA} é igual a algum da {\it BL} é a instância {\it Three}, cuja solução $6,20$ já tinha sido obtida pela $BL_{12}$. Ainda assim, em muitos casos essa diferença é muito pequena e, ao levar em conta o fato de que o custo computacional e de tempo da {\it BRKGA} é em média 1500 vezes maior que os da {\it BL}, não é necessariamente recomendado seu uso.
 
