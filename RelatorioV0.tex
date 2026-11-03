@@ -76,17 +76,19 @@ São Carlos\\2026
 
 \section{Introdução}
 
+Otimização é uma área da matemática que busca resolver problemas de alta complexidade almejando encontrar a melhor solução que formos capazes para aquele problema, chamada solução ótima \cite{arenales}. A modelagem de problemas, por sua vez, pretende traduzir problemas do mundo real para a linguagem matemática, para conseguirmos futuramente analisá-los e, por exemplo, otimizá-los.
 
-Otimização é uma área da matemática que busca resolver problemas de alta complexidade almejando encontrar a melhor solução que formos capazes para aquele problema, chamada solução ótima. A modelagem de problemas, por sua vez, pretende traduzir problemas do mundo real para a linguagem matemática, para conseguirmos futuramente analisá-los e, por exemplo, otimizá-los.
+Problemas de corte e empacotamento são problemas de otimização que buscam encaixar itens em um dado recipiente, de forma a minimizar desperdício de espaço a ser ocupado. Eles podem ser aplicações de problemas da vida real como corte de tecidos na indústria têxtil, corte de itens na automobilística, na indústria de calçados \cite{key} e até na disposição de itens em um contêiner para transporte.
 
-Problemas de corte e empacotamento são problemas otimização que buscam encaixar itens em um dado recipiente, de forma a minimizar desperdício de espaço a ser ocupado. Eles podem ser aplicações de problemas da vida real como corte de tecidos na indústria têxtil, corte de itens na automobilística, na indústria de calçados e até na disposição de itens em um contêiner para transporte. 
+O problema de corte de itens irregulares, também chamado de problema de {\it nesting}, é relevante para a indústria, embora, segundo \cite{geometry}, o número de publicações sobre ele fosse relativamente pequeno em comparação a outros problemas de corte e empacotamento. Uma introdução histórica ao problema e às ferramentas geométricas usadas para resolvê-lo pode ser encontrada em \cite{irregular} e \cite{geometry}. 
+Por se tratar de um problema NP-difícil \cite{key}, justifica-se o uso de heurísticas e meta-heurísticas, como as estudadas neste trabalho. Em \cite{key}, por exemplo, um algoritmo genético de chaves aleatórias enviesadas (BRKGA) é combinado com heurísticas do tipo {\it bottom-left} para determinar a sequência em que os itens são posicionados, e em \cite{containers} é proposta uma heurística geral para problemas de {\it nesting} bidimensionais com recipientes de tamanho limitado.
 
-Nesse trabalho estudamos o problema de corte de itens irregulares em faixa, que consiste em posicionar itens irregulares em uma faixa, sem sobreposição, de forma a minimizar o comprimento usado da faixa. Estudamos também ferramentas para resolver esse problema, como NFPs, IFPs, a heurística construtiva {\it Bottom-Left} e a meta-heurística {\it BRKGA}.
+Este trabalho reúne dois projetos de Iniciação Científica. No primeiro, estudamos a modelagem de problemas de corte, começando por casos regulares, em que os itens são retângulos. No segundo, estudamos o problema de corte de itens irregulares em faixa, que consiste em posicionar itens irregulares em uma faixa, sem sobreposição, de forma a minimizar o comprimento usado da faixa. Estudamos também ferramentas para resolver esse problema, como NFPs, IFPs, a heurística construtiva {\it Bottom-Left} e a meta-heurística {\it BRKGA}.
 
-\textcolor{red}{adicionar referências de trabalhos relacionados}
+Na Seção~\ref{sec:outros} apresentamos exemplos de formulação de problemas de corte regulares, que motivam o problema de itens irregulares. Na Seção~\ref{sec:irregular} mostramos o problema de corte de itens irregulares em faixa e explicamos principalmente as ferramentas utilizadas para garantir que os itens não se sobreponham e permaneçam no interior da faixa. 
+Na Seção~\ref{sec:BL} detalhamos a heurística construtiva {\it Bottom-Left} implementada para resolvermos o problema apresentado na Seção~\ref{sec:irregular}, juntamente com alguns resultados de seus testes na Seção~\ref{sec:experimentosbl}. Na Seção~\ref{sec:BRKGA} detalhamos o funcionamento e implementação da meta-heurística {\it BRKGA} para a resolução do mesmo problema e analisamos os resultados obtidos na Seção~\ref{sec:experimentosBRKGA}. Na Seção~\ref{sec:comp}, comparamos os resultados dos experimentos numéricos de ambas as heurísticas e por fim, na Seção~\ref{sec:cons_finais}, apontamos as considerações finais e possibilidades de trabalhos futuros.
 
-Na Seção~\ref{sec:irregular} mostramos o problema de corte de itens irregulares em faixa e explicamos principalmente as ferramentas utilizadas para garantir que os itens não se sobreponham e permaneçam no interior da faixa. Na Seção~\ref{sec:BL} detalhamos a heurística construtiva {\it Bottom-Left} implementada para resolvermos o problema apresentado na Seção~\ref{sec:irregular}, juntamente com alguns resultados de seus testes na Seção~\ref{sec:experimentosbl}. Na Seção~\ref{sec:BRKGA} detalhamos o funcionamento e implementação da meta-heurística {\it BRKGA} para a resolução do mesmo problema e analisamos os resultados obtidos na Seção~\ref{sec:experimentosBRKGA}. Na Seção~\ref{sec:comp}, comparamos os resultados dos experimentos numéricos de ambas as heurísticas e por fim, na Seção~\ref{sec:cons_finais}, apontamos as considerações finais e possibilidades de trabalhos futuros.
-
+Ao longo da graduação em Bacharelado em Matemática Aplicada e Computação Científica, diversas disciplinas contribuíram para a realizs dação desta pesquisa. Aisciplinas de Otimização Linear e Otimização Inteira forneceram uma base para a modelagem dos problemas de corte apresentada na Seção~\ref{sec:outros}, e Tópicos de Otimização Combinatória foi importante para compreender o uso de heurísticas e meta-heurísticas. A Introdução à Programação de Computadores, por sua vez, deu a base para as implementações em linguagem C, e a Álgebra Linear e a Otimização Não Linear completaram a formação matemática que sustentou o trabalho como um todo.
 
 \section{Formulação de alguns problemas de corte} \label{sec:outros}
 
@@ -506,7 +508,7 @@ Os experimentos foram executados em um computador de 8GB de memória, processado
 
 Os resultados obtidos foram divididos em duas tabelas~\ref{tab:t1} e~\ref{tab:t2}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, cada grupo de duas colunas representa o resultado da execução de uma combinação $BL_{MS}$, em que $M = \{1, 2, \dots, 6\}$ e $S = \{1, 2\}$. A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística $BL_{MS}$ correspondente e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância. O valor em destaque em cada linha é o menor valor entre todos os resultados para aquela instância. Na Tabela~\ref{tab:t1}, temos as 6 variações da heurística que apresentaram as maiores quantidades de instâncias para as quais se obteve melhores comprimentos, ordenadas da que obteve maior quantidade de melhores resultados para a que obteve menor quantidade. Na Tabela~\ref{tab:t2} estão as variantes restantes da heurística.
 
-Como podemos observar na Tabela~\ref{tab:t1}, a ordenação dos itens de forma decrescente baseada no comprimento de cada um ($BL_{31}$) obteve o maior número de bons resultados (12 de 29 instâncias) e, assim como todas as variações, num tempo de execução muito pequeno para todas as instâncias. Para entender a disparidade existente entre as variações da heurística aplicadas a uma mesma instância, dividimos o menor valor de comprimento obtido para cada uma pelo maior. Assim, observamos a maior diferença de valores na instância {\it poly5A}, com razão $0,895$, e a menor na instância {\it poly1A}, com razão $0,715$. Ou seja, notamos que como nenhuma proporção resultou em $1$, variar a ordenação para aplicar a heurística gera resultados diferentes em todos os casos. Quando comparamos somente os resultados das heurísticas $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$, as quatro com melhores resultados, a posição entre qual tem maior número de melhores resultados não foi alterada.
+Como podemos observar na Tabela~\ref{tab:t1}, a ordenação dos itens de forma decrescente baseada no comprimento de cada um ($BL_{31}$) obteve o maior número de bons resultados (12 de 29 instâncias) e, assim como todas as variações, num tempo de execução muito pequeno para todas as instâncias. Para entender a disparidade existente entre as variações da heurística aplicadas a uma mesma instância, dividimos o menor valor de comprimento obtido para cada uma pelo maior. Assim, observamos a maior diferença de valores na instância {\it dighe1}, com razão $0,710$, e a menor na instância {\it poly5A}, com razão $0,895$. Ou seja, notamos que como nenhuma proporção resultou em $1$, variar a ordenação para aplicar a heurística gera resultados diferentes em todos os casos. Quando comparamos somente os resultados das heurísticas $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$, as quatro com melhores resultados, a posição entre qual tem maior número de melhores resultados não foi alterada.
 
 
 
@@ -789,52 +791,52 @@ Os resultados obtidos se encontram na Tabela~\ref{tab:t3}. A coluna ``Instância
 \vspace{15pt}
 
 
-Os resultados nos levam a acreditar que o viés de $0,7$ aplicado no cruzamento entre indivíduos, ou seja, enviesar o resultado para aumentar a probabilidade de que cada chave do novo cromossomo proceda do indivíduo elite escolhido, obtém melhores soluções, ao menos para as instâncias apresentadas.
+Os resultados nos levam a acreditar que o viés de $0,7$ aplicado no cruzamento entre indivíduos, ou seja, enviesar o resultado para aumentar a probabilidade de que cada chave do novo cromossomo proceda do indivíduo elite escolhido, obtém melhores soluções, ao menos para as instâncias apresentadas. Isso se reflete nas tabelas: o viés $0,7$ obteve o menor comprimento em 16 das 29 instâncias, contra 8 do viés $0,5$, com 5 empates.
 
 
 \section{Comparação entre métodos utilizados} \label{sec:comp}
 
 A seguir, na Tabela~\ref{tab:t4} temos a comparação entre os dois resultados da {\it BRKGA} e os quatro melhores da {\it BL}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, os grupos de duas colunas apresentam os resultado de cada execução com o respectivo método utilizado no topo da coluna. A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística correspondente, em que o valor em destaque em cada linha é o menor resultado obtido e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância.
 
+É possível perceber que, considerando o melhor resultado entre as duas execuções, o comprimento final obtido pela {\it BRKGA} foi menor que o de todas as variações da {\it BL} apresentadas, incluindo as outras oito variações que se encontram nas tabelas~\ref{tab:t1} e~\ref{tab:t2}, em 28 das 29 instâncias. O único caso em que o resultado da {\it BRKGA} é igual ao melhor da {\it BL} é a instância {\it three}, cuja solução $6,20$ já tinha sido obtida pela $BL_{12}$. Com o viés $0,5$ isoladamente, a {\it BRKGA} apenas iguala o melhor resultado da {\it BL} nas instâncias {\it blaze1}, {\it poly3b} e {\it poly4b}. Ainda assim, em muitos casos essa diferença é muito pequena e, ao levar em conta o fato de que o custo computacional e de tempo da {\it BRKGA} é em média mais de mil vezes maior que os da {\it BL}, não é necessariamente recomendado seu uso.
 
-É possível perceber que em todas as instâncias o comprimento final obtida pela {\it BRKGA} foi melhor que todas da {\it BL} apresentadas, incluindo as outras oito variações que se encontram nas tabelas~\ref{tab:t1} e~\ref{tab:t2}. O único caso em que o resultado da {\it BRKGA} é igual a algum da {\it BL} é a instância {\it Three}, cuja solução $6,20$ já tinha sido obtida pela $BL_{12}$. Ainda assim, em muitos casos essa diferença é muito pequena e, ao levar em conta o fato de que o custo computacional e de tempo da {\it BRKGA} é em média 1500 vezes maior que os da {\it BL}, não é necessariamente recomendado seu uso.
 
 \begin{adjustwidth}{-2.5 cm}{-2.5 cm}\centering\begin{threeparttable}[!htb]
 \renewcommand{\arraystretch}{1.2}%
     \caption{Resultados obtidos pelas duas variações da $BRKGA$ e os quatro melhores da $BL$.}
     \scriptsize{
     \begin{tabular}{|l|c|rr|rr|rr|rr|rr|rr|}\hline
-        \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} &\multicolumn{2}{c|}{$BRKGA$ - bias $0.5$} &\multicolumn{2}{c|}{$BRKGA$ - bias $0.7$} &\multicolumn{2}{c|}{$BL_{31}$} &\multicolumn{2}{c|}{$BL_{21}$} &\multicolumn{2}{c|}{$BL_{52}$} &\multicolumn{2}{c|}{$BL_{11}$} \\
+        \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} &\multicolumn{2}{c|}{$BRKGA$ - viés $0.5$} &\multicolumn{2}{c|}{$BRKGA$ - viés $0.7$} &\multicolumn{2}{c|}{$BL_{31}$} &\multicolumn{2}{c|}{$BL_{21}$} &\multicolumn{2}{c|}{$BL_{52}$} &\multicolumn{2}{c|}{$BL_{11}$} \\
         Instância & Itens &Comp &T (s) &Comp &T (s) &Comp &T (s) &Comp &T (s) &Comp &T (s) &Comp &T (s) \\\hline
-        albano &24 &\lgray10768.74 &674.09 &10878.59 &637.40 &11376.46 &0.42 &11818.58 &0.29 &13525.12 &0.36 &11818.58 &0.37 \\
-        blaze1 &28 &28.67 &405.20 &\lgray27.87 &402.13 &28.67 &0.22 &31.20 &0.20 &34.34 &0.21 &30.35 &0.28 \\
-        blaze2 &16 &21.23 &86.83 &\lgray21.13 &87.11 &21.50 &0.08 &22.10 &0.06 &25.29 &0.04 &21.50 &0.09 \\
-        dagli &30 &66.12 &597.12 &\lgray65.17 &655.30 &75.47 &0.57 &73.33 &0.39 &89.92 &0.23 &67.69 &0.43 \\
-        dighe1 &16 &133.72 &6.79 &\lgray133.02 &6.69 &146.96 &0.00 &167.06 &0.00 &165.75 &0.00 &163.26 &0.00 \\
-        dighe2 &10 &\lgray129.70 &2.33 &132.87 &2.31 &145.56 &0.00 &163.23 &0.00 &165.16 &0.00 &154.30 &0.00 \\
-        fu &12 &35.97 &1.85 &\lgray35.14 &1.69 &42.25 &0.00 &36.46 &0.00 &43.46 &0.00 &42.00 &0.00 \\
-        jakobs1 &25 &\lgray12.00 &108.46 &\lgray12.00 &111.80 &14.00 &0.10 &13.00 &0.08 &17.00 &0.06 &13.00 &0.09 \\
-        jakobs2 &25 &28.00 &220.78 &\lgray27.50 &216.67 &30.00 &0.21 &30.00 &0.17 &32.00 &0.17 &29.60 &0.16 \\
-        mao &20 &\lgray2031.75 &977.08 &2032.92 &982.93 &2119.63 &0.53 &2289.22 &0.46 &2509.27 &0.46 &2305.08 &0.46 \\
-        marques &24 &84.75 &477.07 &\lgray83.00 &483.63 &89.60 &0.32 &87.00 &0.28 &96.00 &0.26 &93.10 &0.33 \\
-        poly1A &15 &16.57 &19.07 &\lgray16.51 &18.22 &18.10 &0.01 &20.18 &0.01 &22.56 &0.01 &22.05 &0.01 \\
-        poly2A &30 &\lgray31.94 &163.26 &31.96 &165.36 &33.33 &0.10 &32.31 &0.09 &40.14 &0.09 &36.11 &0.11 \\
-        poly2b &30 &34.25 &201.48 &\lgray33.96 &199.96 &35.25 &0.12 &35.96 &0.11 &41.01 &0.11 &37.07 &0.13 \\
-        poly3A &45 &\lgray47.06 &573.20 &47.15 &580.47 &50.08 &0.39 &52.28 &0.35 &56.83 &0.31 &53.63 &0.38 \\
-        poly3b &45 &45.29 &691.00 &\lgray44.29 &681.84 &45.68 &0.45 &45.29 &0.35 &51.14 &0.34 &48.42 &0.46 \\
-        poly4A &60 &\lgray62.36 &1353.01 &62.49 &1381.14 &66.52 &0.86 &66.96 &0.82 &68.35 &0.73 &69.11 &0.95 \\
-        poly4b &60 &55.97 &1490.47 &\lgray55.79 &1497.29 &55.97 &0.91 &56.99 &0.85 &61.77 &0.82 &60.25 &0.96 \\
-        poly5A &75 &\lgray77.10 &2624.35 &77.57 &2655.93 &80.06 &1.74 &80.39 &1.55 &85.44 &1.48 &82.98 &1.95 \\
-        poly5b &75 &67.22 &2874.35 &\lgray67.07 &2847.80 &69.28 &1.81 &67.52 &1.50 &70.99 &1.52 &71.56 &1.85 \\
-        shapes0 &43 &64.75 &9090.53 &\lgray64.00 &9049.48 &67.00 &7.26 &68.50 &5.92 &66.00 &4.59 &68.50 &6.04 \\
-        shapes1 &43 &\lgray65.00 &9094.61 &\lgray65.00 &9295.66 &67.00 &6.83 &68.50 &5.89 &66.00 &4.60 &68.50 &5.68 \\
-        shirts &99 &65.37 &15331.76 &\lgray64.77 &14867.72 &68.56 &7.76 &68.04 &7.71 &67.05 &7.96 &68.04 &7.63 \\
-        three &3 &\lgray6.20 &0.04 &\lgray6.20 &0.05 &7.00 &0.00 &7.00 &0.00 &7.00 &0.00 &6.67 &0.00 \\
-        threep2 &6 &\lgray9.33 &0.33 &\lgray9.33 &0.31 &10.00 &0.00 &10.00 &0.00 &10.00 &0.00 &10.67 &0.00 \\
-        threep2w9 &6 &\lgray8.50 &0.31 &\lgray8.50 &0.32 &9.27 &0.00 &9.27 &0.00 &9.27 &0.00 &9.67 &0.00 \\
-        threep3 &9 &14.00 &1.04 &\lgray13.53 &1.03 &16.33 &0.00 &16.33 &0.00 &16.33 &0.00 &16.33 &0.00 \\
-        threep3w9 &9 &11.25 &1.09 &\lgray11.10 &0.97 &14.00 &0.00 &14.00 &0.00 &14.00 &0.00 &12.17 &0.00 \\
-        trousers &64 &\lgray269.33 &3789.94 &271.47 &3627.32 &281.21 &1.63 &283.60 &1.98 &305.89 &2.01 &283.60 &1.90 \\
+        albano &24 &\lgray10768,74 &674,09 &10878,59 &637,40 &11376,46 &0,42 &11818,58 &0,29 &13525,12 &0,36 &11818,58 &0,37 \\
+        blaze1 &28 &28,67 &405,20 &\lgray27,87 &402,13 &28,67 &0,22 &31,20 &0,20 &34,34 &0,21 &30,35 &0,28 \\
+        blaze2 &16 &21,23 &86,83 &\lgray21,13 &87,11 &21,50 &0,08 &22,10 &0,06 &25,29 &0,04 &21,50 &0,09 \\
+        dagli &30 &66,12 &597,12 &\lgray65,17 &655,30 &75,47 &0,57 &73,33 &0,39 &89,92 &0,23 &67,69 &0,43 \\
+        dighe1 &16 &133,72 &6,79 &\lgray133,02 &6,69 &146,96 &0,00 &167,06 &0,00 &165,75 &0,00 &163,26 &0,00 \\
+        dighe2 &10 &\lgray129,70 &2,33 &132,87 &2,31 &145,56 &0,00 &163,23 &0,00 &165,16 &0,00 &154,30 &0,00 \\
+        fu &12 &35,97 &1,85 &\lgray35,14 &1,69 &42,25 &0,00 &36,46 &0,00 &43,46 &0,00 &42,00 &0,00 \\
+        jakobs1 &25 &\lgray12,00 &108,46 &\lgray12,00 &111,80 &14,00 &0,10 &13,00 &0,08 &17,00 &0,06 &13,00 &0,09 \\
+        jakobs2 &25 &28,00 &220,78 &\lgray27,50 &216,67 &30,00 &0,21 &30,00 &0,17 &32,00 &0,17 &29,60 &0,16 \\
+        mao &20 &\lgray2031,75 &977,08 &2032,92 &982,93 &2119,63 &0,53 &2289,22 &0,46 &2509,27 &0,46 &2305,08 &0,46 \\
+        marques &24 &84,75 &477,07 &\lgray83,00 &483,63 &89,60 &0,32 &87,00 &0,28 &96,00 &0,26 &93,10 &0,33 \\
+        poly1A &15 &16,57 &19,08 &\lgray16,51 &18,22 &18,10 &0,01 &20,18 &0,01 &22,56 &0,01 &22,05 &0,01 \\
+        poly2A &30 &\lgray31,90 &163,26 &31,96 &165,36 &33,33 &0,10 &32,31 &0,09 &40,14 &0,09 &36,11 &0,11 \\
+        poly2b &30 &34,25 &201,48 &\lgray33,96 &199,96 &35,25 &0,12 &35,96 &0,11 &41,01 &0,11 &37,07 &0,13 \\
+        poly3A &45 &\lgray47,06 &573,20 &47,15 &580,47 &50,08 &0,39 &52,28 &0,35 &56,83 &0,31 &53,63 &0,38 \\
+        poly3b &45 &45,29 &691,01 &\lgray44,29 &681,84 &45,68 &0,45 &45,29 &0,35 &51,14 &0,34 &48,42 &0,46 \\
+        poly4A &60 &\lgray62,36 &1353,01 &62,49 &1381,14 &66,52 &0,86 &66,96 &0,82 &68,35 &0,73 &69,11 &0,95 \\
+        poly4b &60 &55,97 &1490,48 &\lgray55,79 &1497,29 &55,97 &0,91 &56,99 &0,85 &61,77 &0,82 &60,25 &0,96 \\
+        poly5A &75 &\lgray77,10 &2624,35 &77,57 &2655,93 &80,06 &1,74 &80,39 &1,55 &85,44 &1,48 &82,98 &1,95 \\
+        poly5b &75 &67,22 &2874,35 &\lgray67,07 &2847,81 &69,28 &1,81 &67,52 &1,50 &70,99 &1,52 &71,56 &1,85 \\
+        shapes0 &43 &64,75 &9090,53 &\lgray64,00 &9049,48 &67,00 &7,26 &68,50 &5,92 &66,00 &4,59 &68,50 &6,04 \\
+        shapes1 &43 &\lgray65,00 &9094,61 &\lgray65,00 &9295,66 &67,00 &6,83 &68,50 &5,89 &66,00 &4,60 &68,50 &5,68 \\
+        shirts &99 &65,37 &15331,76 &\lgray64,77 &14867,72 &68,56 &7,76 &68,04 &7,71 &67,05 &7,96 &68,04 &7,63 \\
+        three &3 &\lgray6,20 &0,04 &\lgray6,20 &0,05 &7,00 &0,00 &7,00 &0,00 &7,00 &0,00 &6,67 &0,00 \\
+        threep2 &6 &\lgray9,33 &0,33 &\lgray9,33 &0,31 &10,00 &0,00 &10,00 &0,00 &10,00 &0,00 &10,67 &0,00 \\
+        threep2w9 &6 &\lgray8,50 &0,31 &\lgray8,50 &0,32 &9,27 &0,00 &9,27 &0,00 &9,27 &0,00 &9,67 &0,00 \\
+        threep3 &9 &14,00 &1,04 &\lgray13,53 &1,03 &16,33 &0,00 &16,33 &0,00 &16,33 &0,00 &16,33 &0,00 \\
+        threep3w9 &9 &11,25 &1,09 &\lgray11,10 &0,97 &14,00 &0,00 &14,00 &0,00 &14,00 &0,00 &12,17 &0,00 \\
+        trousers &64 &\lgray269,33 &3789,94 &271,47 &3627,32 &281,21 &1,63 &283,60 &1,98 &305,89 &2,01 &283,60 &1,90 \\
         \hline
     \end{tabular}
     }
@@ -1324,13 +1326,17 @@ O exemplo utilizado na Seção~\ref{sec:irregular} ao explicar o problema, a Fig
 
 \section{Considerações Finais} \label{sec:cons_finais}
 
-Este trabalho é a continuação de um Projeto de Iniciação Científica que consistiu em estudar otimização linear, nos casos contínuo e inteiro, focando na modelagem. Estudamos a partir de ~\cite{arenales} a modelagem de um problema de corte bidimensional regular, em que os itens são retângulos, para então entender como seria feita a resolução de um problema de corte de itens irregulares (polígonos convexos e não convexos) em faixa. 
+Este trabalo reuniu dois projetos de Iniciação Científica. O primeiro consistiu em estudar otimização linear, nos casos contínuo e inteiro, focando na modelagem. Estudamos a partir de~\cite{arenales} a modelagem de um problema de corte unidimensional e um de corte bidimensional, em que os itens são retângulos, para então entender como seria feita a resolução de um problema de corte de itens irregulares em faixa. Para tal problema, foi necessário estudar técnicas para verificar a sobreposição de itens (particularmente, o {\it No-Fit Polygon}) e implementamos, em linguagem C, a heurística construtiva {\it Bottom-Left} para polígonos convexos. 
 
-No projeto atual, para resolução de tal problema, foi necessário estudar técnicas para verificar a sobreposição de itens (particularmente, o {\it No-Fit Polygon}) e dois métodos para resolução do problema, implementadas em linguagem C, a heurística construtiva {\it Bottom-Left} e a meta-heurística {\it BRKGA}. 
+Avaliamos ser mais interessante desenvolver o código em C, aprendendo a linguagem e alguns detalhes de implementação, ao invés de utilizar um {\it solver} para resolver o modelo do problema. Os experimentos numéricos, realizados em um pequeno conjunto de instâncias clássicas da literatura, mostraram que a heurística foi capaz de encontrar boas soluções em um tempo computacional muito pequeno.
 
-Foram utilizadas doze combinações diferentes de ordenação dos itens para então implementar a $BL$ e experimentos numéricos foram realizados com um conjunto de instâncias clássicas da literatura. Estes experimentos mostraram que a heurística foi capaz de encontrar soluções boas e ruins dependendo da ordenação, sendo as $BL_{31}$ e $BL_{21}$ as duas que obtiveram melhores resultados, porém todas em um tempo computacional muito pequeno. 
+No segundo projeto, ampliamos esse estudo: estendemos a implementação da heurística {\it Bottom-Left} para tratar polígonos convexos e não convexos e utilizamos doze combinações diferentes de ordenação dos itens. Os experimentos numéricos com a $BL$, realizados com vinte e nove instâncias clássicas da literatura, mostraram que a heurística foi capaz de encontrar soluções boas e ruins dependendo da ordenação, sendo as $BL_{31}$ e $BL_{21}$ as duas que obtiveram melhores resultados, porém todas em um tempo computacional muito pequeno.
 
-Foram utilizados também dois viés diferentes para a implementação da {\it BRKGA} nessas mesmas instâncias, cujos experimentos mostraram melhores soluções, como o esperado, porém com um gasto computacional muito alto, dificultando seu uso. Devido a isso, uma possível continuação desse trabalho é a tentativa de melhorar o código, além de implementar a rotação dos itens e realizar mais testes com outras instâncias, tentando obter melhores resultados da {\it BRKGA}.
+Em seguida, implementamos a meta-heurística {\it BRKGA}, utilizando dois vieses diferentes nessas mesmas instâncias. Os experimentos mostraram melhores soluções, como o esperado: considerando a melhor entre as duas execuções, a {\it BRKGA} obteve comprimento menor que o de todas as variações da {\it BL} em 28 das 29 instâncias, e o viés $0,7$ foi o que obteve o menor comprimento no maior número de instâncias. Porém, o gasto computacional é muito alto, dificultando seu uso.
+
+Como continuação, uma possibilidade para trabalhos futuros é a tentativa de melhorar o código, além de implementar a rotação dos itens e realizar mais testes com outras instâncias, tentando obter melhores resultados da {\it BRKGA}.
+
+
 
 \printbibliography
 
