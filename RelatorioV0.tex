@@ -90,7 +90,7 @@ Na Seção~\ref{sec:outros} apresentamos exemplos de formulação de problemas d
 
 Na Seção~\ref{sec:BL} detalhamos a heurística construtiva {\it Bottom-Left} implementada para resolvermos o problema apresentado na Seção~\ref{sec:irregular}, juntamente com alguns resultados de seus testes na Seção~\ref{sec:experimentosbl}. Na Seção~\ref{sec:BRKGA} detalhamos o funcionamento e implementação da meta-heurística {\it BRKGA} para a resolução do mesmo problema e analisamos os resultados obtidos na Seção~\ref{sec:experimentosBRKGA}. Na Seção~\ref{sec:comp}, comparamos os resultados dos experimentos numéricos de ambas as heurísticas e por fim, na Seção~\ref{sec:cons_finais}, apontamos as considerações finais e possibilidades de trabalhos futuros.
 
-Ao longo da graduação em Bacharelado em Matemática Aplicada e Computação Científica, diversas disciplinas contribuíram para a realização desta pesquisa. As disciplinas de Otimização Linear e Otimização Inteira forneceram uma base para a modelagem dos problemas de corte apresentada na Seção~\ref{sec:outros}, e Tópicos de Otimização Combinatória foi importante para compreender o uso de heurísticas e meta-heurísticas. A Introdução à Programação de Computadores, por sua vez, deu a base para as implementações em linguagem C, e a Álgebra Linear e a Otimização Não Linear completaram a formação matemática que sustentou o trabalho como um todo.
+Ao longo da graduação no Bacharelado em Matemática Aplicada e Computação Científica, diversas disciplinas contribuíram para a realização desta pesquisa. As disciplinas de Otimização Linear e Otimização Inteira forneceram uma base para a modelagem dos problemas de corte apresentada na Seção~\ref{sec:outros}, e Tópicos de Otimização Combinatória foi importante para compreender o uso de heurísticas e meta-heurísticas. A Introdução à Programação de Computadores, por sua vez, deu a base para as implementações em linguagem C, e a Álgebra Linear e a Otimização Não Linear completaram a formação matemática que sustentou o trabalho como um todo.
 
 \section{Formulação de alguns problemas de corte} \label{sec:outros}
 
@@ -99,6 +99,8 @@ Problemas de corte e empacotamento são aqueles em que mais de uma peça deve se
 \subsection{Um problema de corte unidimensional}
 
 Para exemplo, vamos analisar um problema unidimensional simples, de corte de barras em pedaços menores. Esta seção se baseia principalmente no livro \cite{arenales}. Tome quantas barras forem necessárias, cada uma de comprimento $L$, as quais queremos cortar em pedaços menores. Temos $m$ comprimentos diferentes de barras menores requeridas, em que $l_1, l_2, \dots, l_m$ são seus respectivos comprimentos e $b_i$ é a quantidade de barras com comprimento $l_i$ que precisamos obter, sendo $i = 1, \dots, m$.
+
+Denotamos por $n$ o número de barras de comprimento $L$ consideradas suficiente para atender a demanda.
 
 Cada barra $j$ que cortamos será dada pelo vetor $a_j = (a_{1j}, a_{2j}, \dots, a_{mj})$, em que $a_{ij}$ é a quantidade do comprimento $l_i$ na barra $j$. Para nossa formulação, cada componente $a_{ij}$ será uma variável. O objetivo do problema é minimizar a quantidade de barras de comprimento $L$ necessárias para cortar todas as barras menores, de forma a minimizar o desperdício causado pelos cortes. O problema modelado fica da seguinte forma:
 \begin{equation*}
@@ -114,7 +116,7 @@ Cada barra $j$ que cortamos será dada pelo vetor $a_j = (a_{1j}, a_{2j}, \dots,
 
 A primeira restrição garante que, para cada barra menor do tipo $i$, o somatório da quantidade dela em todas as barras $j$ utilizadas corresponda ao total $b_i$ requisitado. A segunda garante que, para cada barra $j$ cortada, o somatório do comprimento de cada barra menor $l_i$ multiplicado pelo número de vezes em que $i$ foi utilizada na barra $j$ seja menor ou igual ao comprimento total $L$ de cada barra $j$.
 
-Na terceira, $G$ é um número suficientemente grande e a variável binária $x_j$ indica se a barra $j$ é utilizada. Como o objetivo é minimizar a soma de todos os $x_j$, a tendência do modelo será colocar todos os $x_j = 0$, mas para qualquer $j$ com a soma de seus $a_{ij}$ maior que $0$, a restrição obriga que $x_j$ seja $1$. $G$ precisa ser um número grande o suficiente para que, quando $x_j = 1$, o lado direito da inequação seja maior que o lado esquerdo. Uma opção para $G$ é considerá-lo $G = \sum_{i=1}^m b_i$, o total de barras que queremos cortadas, dado que o número de barras de comprimento $L$ utilizadas nunca será maior que isso.
+Na terceira, $G$ é um número suficientemente grande e a variável binária $x_j$ indica se a barra $j$ é utilizada. Como o objetivo é minimizar a soma de todos os $x_j$, a tendência do modelo será colocar todos os $x_j = 0$, mas para qualquer $j$ com a soma de seus $a_{ij}$ maior que $0$, a restrição obriga que $x_j$ seja $1$. $G$ precisa ser um número grande o suficiente para que, quando $x_j = 1$, a restrição não limite a quantidade de pedaços cortados na barra $j$. Uma opção é $G = \sum_{i=1}^m b_i$, o total de pedaços requeridos, pois nenhuma barra pode conter mais pedaços do que o total demandado.
 
 Como nesse modelo não estamos trabalhando com o posicionamento das barras menores, e sim com quantas cabem na barra $L$, não precisamos nos preocupar com sobreposição, estamos supondo que cada barra menor será posicionada na extremidade da que foi colocada anteriormente.
 
@@ -124,7 +126,76 @@ Passamos então a um problema um pouco mais complexo, o bidimensional, no qual a
 
 Consideramos que a faixa tem seu canto inferior esquerdo na coordenada $(0,0)$, que cada retângulo tem seu próprio canto inferior esquerdo como referência. Dessa forma, o posicionamento do retângulo $i$ é dado por coordenadas $(x_i, y_i)$, variáveis do nosso modelo.
 
-Para garantirmos que um retângulo não sobrepõe o outro, utilizamos as variáveis binárias $e_{ij},\; d_{ij}, \; b_{ij}, \;t_{ij}$ para indicar se o retângulo $i$ está à esquerda, à direita, em baixo ou no topo (respectivamente) do retângulo $j$. Para tal, tomamos $M$ como sendo um número grande. O modelo é dado por:
+Para garantirmos que um retângulo não sobrepõe o outro, utilizamos as variáveis binárias $e_{ij},\; d_{ij}, \; b_{ij}, \;t_{ij}$ para indicar se o retângulo $i$ está à esquerda, à direita, em baixo ou no topo (respectivamente) do retângulo $j$. Para tal, tomamos $M$ como sendo um número grande. 
+
+\begin{figure}[ht]
+\centering
+\begin{subfigure}[b]{\textwidth}
+\centering
+\begin{tikzpicture}[>=stealth]
+  \draw[thick] (0,4) -- (8.6,4);
+  \draw[thick] (0,0) -- (8.6,0);
+  \draw[thick] (0,0) -- (0,4);
+  \draw[thick, dashed] (7.0,-0.2) -- (7.0,4.2);
+  \filldraw[fill=blue!15, draw=blue!70!black, thick] (1.2,0.6) rectangle (3.8,2.4);
+  \node at (2.5,1.5) {$i$};
+  \filldraw[fill=orange!20, draw=orange!80!black, thick] (4.6,1.5) rectangle (7.0,3.3);
+  \node at (5.8,2.4) {$j$};
+  \fill (1.2,0.6) circle (2pt);
+  \draw[dotted] (1.2,0.6) -- (1.2,0);
+  \draw[dotted] (1.2,0.6) -- (0,0.6);
+  \node[below] at (1.2,0) {$x_i$};
+  \node[left] at (0,0.6) {$y_i$};
+  \draw[<->] (1.2,2.75) -- (3.8,2.75) node[midway, above] {$c_i$};
+  \draw[<->] (0.75,0.6) -- (0.75,2.4) node[midway, right] {$a_i$};
+  \draw[<->] (-0.6,0) -- (-0.6,4) node[midway, left] {$A$};
+  \draw[<->] (0,-0.95) -- (7.0,-0.95) node[midway, below] {$C$};
+\end{tikzpicture}
+\caption{Faixa de altura $A$ e comprimento $C$, com dois retângulos $i$ e $j$. O retângulo $i$ é posicionado pelas coordenadas $(x_i, y_i)$ do seu canto inferior esquerdo.}
+\end{subfigure}
+
+\vspace{0.6cm}
+
+\begin{subfigure}[b]{\textwidth}
+\centering
+\begin{tikzpicture}[>=stealth]
+  \tikzset{
+    rj/.style={fill=orange!20, draw=orange!80!black, thick},
+    ri/.style={fill=blue!15, draw=blue!70!black, thick},
+    rot/.style={align=center, font=\footnotesize, text width=3.6cm, anchor=north}
+  }
+  \begin{scope}[xshift=0cm]
+    \filldraw[rj] (1,1) rectangle (2.4,2.2); \node at (1.7,1.6) {$j$};
+    \filldraw[ri] (-0.2,1.2) rectangle (0.8,2.0); \node at (0.3,1.6) {$i$};
+    \node[rot] at (1.7,-0.5) {$e_{ij}=1$:\\ $x_i + c_i \leq x_j$};
+  \end{scope}
+  \begin{scope}[xshift=4.1cm]
+    \filldraw[rj] (1,1) rectangle (2.4,2.2); \node at (1.7,1.6) {$j$};
+    \filldraw[ri] (2.6,1.2) rectangle (3.6,2.0); \node at (3.1,1.6) {$i$};
+    \node[rot] at (1.7,-0.5) {$d_{ij}=1$:\\ $x_j + c_j \leq x_i$};
+  \end{scope}
+  \begin{scope}[xshift=8.2cm]
+    \filldraw[rj] (1,1) rectangle (2.4,2.2); \node at (1.7,1.6) {$j$};
+    \filldraw[ri] (1.2,-0.1) rectangle (2.2,0.7); \node at (1.7,0.3) {$i$};
+    \node[rot] at (1.7,-0.5) {$b_{ij}=1$:\\ $y_i + a_i \leq y_j$};
+  \end{scope}
+  \begin{scope}[xshift=12.3cm]
+    \filldraw[rj] (1,1) rectangle (2.4,2.2); \node at (1.7,1.6) {$j$};
+    \filldraw[ri] (1.2,2.4) rectangle (2.2,3.2); \node at (1.7,2.8) {$i$};
+    \node[rot] at (1.7,-0.5) {$t_{ij}=1$:\\ $y_j + a_j \leq y_i$};
+  \end{scope}
+\end{tikzpicture}
+\caption{As quatro posições relativas possíveis de $i$ em relação a $j$ e a restrição de não sobreposição correspondente.}
+\end{subfigure}
+\caption{Ilustração do modelo bidimensional regular.}
+\label{fig:modelo2d}
+\end{figure}
+
+
+A Figura~\ref{fig:modelo2d} ilustra a faixa, as variáveis de posição e as quatro posições relativas possíveis entre dois retângulos.
+
+
+O modelo é dado por:
 \begin{equation*}
    \begin{aligned}
     \textrm{Minimizar} \quad & C\\
@@ -149,7 +220,7 @@ Como vimos com esses dois exemplos, problemas de corte podem variar bastante e p
 
 Até agora foram exibidos problemas mais simples por serem regulares. Porém, como podemos verificar se não há sobreposição entre itens quando estamos trabalhando com polígonos irregulares? Para responder, precisamos antes definir o problema que queremos resolver.
 
-Ao longo desse trabalho buscamos encontrar soluções possíveis e boas para o problema de posicionar $m$ tipos de itens irregulares (representados por polígonos), cada um com uma quantidade de cópias, em uma faixa de altura fixa e comprimento ilimitado. O objetivo é  posicionar todos os itens sem sobrepozição, minimizando o comprimento da faixa efetivamente utilizado. Observe na Figura~\ref{fig:f1} um exemplo de uma solução desse problema de corte, mais detalhes são apresentados na Seção~\ref{sec:experimentosbl}.
+Ao longo desse trabalho buscamos encontrar soluções possíveis e boas para o problema de posicionar $m$ tipos de itens irregulares (representados por polígonos), cada um com uma quantidade de cópias, em uma faixa de altura fixa e comprimento ilimitado. O objetivo é  posicionar todos os itens sem sobreposição, minimizando o comprimento da faixa efetivamente utilizado. Observe na Figura~\ref{fig:f1} um exemplo de uma solução desse problema de corte, mais detalhes são apresentados na Seção~\ref{sec:comp}.
 
 \begin{figure}[H]
     \centering
@@ -307,11 +378,11 @@ Ao longo desse trabalho buscamos encontrar soluções possíveis e boas para o p
 \end{figure}
 
 
-O problema de corte em faixa reflete o dilema de muitas indústrias, como a têxtil, ao recortar modelos de roupa de um rolo de tecido, ou a automobilística, recortando itens de carro em uma chapa de metal. Caso um polígono sobreponha outro, os itens resultantes do corte são inutilizáveis quando o problema é aplicado à vida real, como nos exemplos citados. Por esse motivo, devemos garantir a não sobreposição de itens.
+O problema de corte em faixa reflete o dilema de muitas indústrias, como a têxtil, ao recortar modelos de roupa de um rolo de tecido, ou a automobilística, recortando itens de carro em uma chapa de metal. Caso um polígono sobreponha outro, os itens resultantes do corte são inutilizáveis quando o problema é aplicado à vida real, como nos exemplos citados.
 
-Dessa forma, é imprescindível garantir que não haja sobreposição na alocação final e que todos estejam completamente contidos no recipiente. Para verificar essas condições em problemas bidimensionais com itens irregulares, utilizamos os métodos {\it Inner-Fit Polygon} (IFP) e {\it No-Fit Polygon} (NFP). Existem outros métodos para a verificação, como o Método Raster, o de Trigonometria Direta e a função D, explicados em \cite{geometry}. Tanto no IFP quanto no NFP, utilizamos um ponto $P$ do item como ponto de referência. Sua posição final determina a translação aplicada ao polígono.
+Por esse motivo, é imprescindível garantir que não haja sobreposição na alocação final e que todos estejam completamente contidos no recipiente. Para verificar essas condições em problemas bidimensionais com itens irregulares, utilizamos os métodos {\it Inner-Fit Polygon} (IFP) e {\it No-Fit Polygon} (NFP). Existem outros métodos para a verificação, como o Método Raster, o de Trigonometria Direta e a função D, explicados em \cite{geometry}. Tanto no IFP quanto no NFP, utilizamos um ponto $P$ do item como ponto de referência. Sua posição final determina a translação aplicada ao polígono.
 
-O IFP de um item $X$ corresponde à região no plano em que o ponto de referência de $X$ pode ser colocado de forma que o item esteja contido por completo no recipiente. No problema com o qual estamos trabalhando o recipiente é a faixa de comprimento infinito, um retângulo de altura $A$ determinada e comprimento $C$ a ser minimizado, com o ponto inferior esquerdo posicionado em $(0,0)$.
+O IFP de um item $X$ corresponde à região no plano em que o ponto de referência de $X$ pode ser colocado de forma que o item esteja contido por completo no recipiente. No problema com o qual estamos trabalhando o recipiente é uma faixa com o canto inferior esquerdo posicionado em $(0,0)$, de altura fixa $A$ e comprimento $C$ inicialmente ilimitado. O comprimento da faixa é dado como ilimitado pois nosso objetivo nesse problema é minimizá-lo.
 
 
 \begin{figure} [H]
@@ -324,7 +395,7 @@ O IFP de um item $X$ corresponde à região no plano em que o ponto de referênc
 No exemplo da Figura~\ref{fig:f2}, o retângulo delimitado em preto é a faixa e queremos posicionar $O$ em seu interior. O $IFP_O$ está representado na figura pela área em verde e o ponto de referência $P$ está destacado em laranja. Na figura, $H_1$ e $H_2$ representam, respectivamente, as distâncias verticais entre $P$ e o ponto mais baixo e mais alto de $O$. Já $h$ é o intervalo na vertical disponível para posicionar $P$. Além disso, $P$ só pode ser colocado horizontalmente à direita de $C_1$, distância entre $P$ e o ponto mais à esquerda de $O$. 
 No desenho, $O$ estaria alocado no ponto mais à esquerda e abaixo possível. Em resumo, com a faixa de canto inferior esquerdo em $(0,0)$, o $IFP_O$ é um retângulo de comprimento infinito, com canto inferior esquerdo em $(C_1, H_1)$ e altura $$h = A - H_1 - H_2.$$ Ou seja, o ponto $P$ deve ficar a pelo menos $H_1$ da base da faixa e a pelo menos $H_2$ do seu topo.
 
-Agora que analisamos a relação de $O$ com o recipiente, vamos considerar a interação entre os polígonos $M$ e $O$ presentes na Figura~\ref{fig:f3a}, com o objetivo de determinar as posições em que não há sobreposição. Uma forma de fazer isso é manter $M$ fixado e transladar $O$ ao seu redor, sempre mantendo os polígonos em contato. O caminho percorrido pelo ponto de referência de $O$ delimita a fronteira do polígono que chamamos de {\it No-Fit Polygon (NFP)}. Quando o ponto de referência de $O$ estpa no interior do NFP, os polígonos $O$ e $M$ se sobrepõem e caso o ponto esteja na fronteira do NFP eles estão em contato (sem sobreposição de seus interiores).
+Agora que analisamos a relação de $O$ com o recipiente, vamos considerar a interação entre os polígonos $M$ e $O$ presentes na Figura~\ref{fig:f3a}, com o objetivo de determinar as posições em que não há sobreposição. Uma forma de fazer isso é manter $M$ fixado e transladar $O$ ao seu redor, sempre mantendo os polígonos em contato. O caminho percorrido pelo ponto de referência de $O$ delimita a fronteira do polígono que chamamos de {\it No-Fit Polygon (NFP)}. Quando o ponto de referência de $O$ está no interior do NFP, os polígonos $O$ e $M$ se sobrepõem e caso o ponto esteja na fronteira do NFP eles estão em contato (sem sobreposição de seus interiores).
 
 Ao longo desse trabalho, denotamos por $NFP_{MO}$ aquele em que $M$ está fixo e $O$ translada ao seu redor, como ilustrado na Figura~\ref{fig:f3b}. É importante notar que seu desenho poderá ser diferente do $NFP_{OM}$, o NFP gerado se alterarmos qual polígono translada e qual está fixo.
 
@@ -412,7 +483,7 @@ Perceba que o polígono $M$ apresentado anteriormente não é convexo. Para cons
     \label{fig:f6}
 \end{figure}
 
-Na próxima seção vamos aplicar as ferramentas apresentadas para implementar uma heurística da resolução do problema de corte de itens irregulares em faixa, considerando polígonos convexos e não convexos.
+Na próxima seção vamos aplicar as ferramentas apresentadas para implementar uma heurística para a resolução do problema de corte de itens irregulares em faixa, considerando polígonos convexos e não convexos.
 
 \section{Heurística construtiva para resolver o problema de corte de itens irregulares} \label{sec:BL}
 
@@ -428,7 +499,7 @@ Na Figura~\ref{fig:f7}, temos os polígonos já apresentados $M$ e $O$ e um quad
 \end{figure}
 
 
-Uma maneira de encontrar as possíveis posições para alocar o polígono $O$ é calcular todas interseções entre as arestas de $NFP_{MO}$, $NFP_{NO}$ e $IFP_O$, descartando as que não forem posições viáveis. Note que isso é prático pois, ao alocarmos um item, sempre é possível melhorar o encaixe garantindo que ele esteja em contato com ao menos duas arestas (sejam elas de itens ou da fronteira do recipiente).
+Uma maneira de encontrar as possíveis posições para alocar o polígono $O$ é calcular todas intersecções entre as arestas de $NFP_{MO}$, $NFP_{NO}$ e $IFP_O$, descartando as que não forem posições viáveis. Note que isso é prático pois, ao alocarmos um item, sempre é possível melhorar o encaixe garantindo que ele esteja em contato com ao menos duas arestas (sejam elas de itens ou da fronteira do recipiente).
 
 Observe na Figura~\ref{fig:f8} os NFPs deslocados baseados na alocação do seu respectivo polígono base e na Figura~\ref{fig:f9} todas as intersecções. Os pontos em vermelho são aqueles que estão na área proibida de alguma das restrições, ou seja, dentro de algum NFP ou no exterior do IFP. Entre os cinco pontos viáveis, destacados de verde, todos apresentam mesma abscissa e o mais abaixo é aquele onde $O$ deve ser posicionado (ponto $P_5$).
 
@@ -457,9 +528,9 @@ Na Figura~\ref{fig:f10} temos então o polígono $O$ em sua posição final de a
 \end{figure}
 
 
-Agora que temos todas as ferramentas de alocação bem sedimentadas, vamos para a resolução em si. Para resolver o problema de corte de itens irregulares em faixa foi implementado um código em linguagem C com a heurística {\it Bottom-Left}. Esse código é uma versão ampliada da implementada no primeiro projeto de Iniciação Científica, que ordenava os itens apenas por área decrescente, alocava cada item com todas as suas cópias de uma só vez e foi testada em seis instâncias.\footnote{O código dessa primeira versão pode ser acessado em \url{https://sites.icmc.usp.br/andretta/pinheiro-2024/}.} Nesta etapa, ampliamos a implementação para considerar doze critérios de ordenação e tratar polígonos não convexos, com as cópias de cada item ordenadas individualmente, e o aplicamos a vinte e nove instâncias.
+Agora que temos todas as ferramentas de alocação bem sedimentadas, vamos para a resolução em si. Para resolver o problema de corte de itens irregulares em faixa foi implementado um código em linguagem C com a heurística {\it Bottom-Left}. Esse código é uma versão ampliada da implementada no primeiro projeto de Iniciação Científica, que ordenava os itens apenas por área decrescente, alocava cada item com todas as suas cópias de uma só vez e foi testada em seis instâncias.\footnote{O código dessa primeira versão pode ser acessado em \url{https://sites.icmc.usp.br/andretta/pinheiro-2024/}.} Nesta etapa, ampliamos a implementação para considerar doze critérios de ordenação e tratar polígonos não convexos, com as cópias de cada item ordenadas individualmente, e a aplicamos a vinte e nove instâncias.
 
-O programa lê em um arquivo ``general\_data.txt'' a altura $A$ da faixa, o número $m$ de tipos de itens e nas $m$ linhas seguintes o número de cópias demandadas de cada tipo. Em seguida, são lidos $m$ arquivos ``pieceX.txt'' que informa o número de partes do item $X$, representado por um número de 1 a $m$, e lista os vértices em sentido anti-horário para cada parte, considerando que o primeiro ponto da primeira parte é $(0,0)$, que é o ponto de referência de $X$.
+O programa lê em um arquivo ``general\_data.txt'' a altura $A$ da faixa, o número $m$ de tipos de itens e nas $m$ linhas seguintes o número de cópias demandadas de cada tipo. Em seguida, são lidos $m$ arquivos ``pieceX.txt'' que informam o número de partes do item $X$, representado por um número de 1 a $m$, e listam os vértices em sentido anti-horário para cada parte, considerando que o primeiro ponto da primeira parte é $(0,0)$, que é o ponto de referência de $X$.
 
 Por último, o programa lê $m^2$ arquivos ``NFP\_i\_0\_j\_0.txt'' com as partes e vértices de cada NFP, construídos pensando no ponto de referência do item $i$ em $(0,0)$ e o item $j$ transladando ao seu redor, ambos sem rotação.
 
@@ -483,7 +554,7 @@ Em relação ao sentido da ordenação existem duas opções: $1$ ordena o índi
     \begin{enumerate}
         \item Calcula o $IFP_a$;
         \item Verifica se o vértice inferior esquerdo do $IFP_a$ é válido (ou seja, se não está no interior de nenhum $NFP_{ai}$, com $i$ os itens já alocados na faixa);
-        \item Em caso positivo, define $M$, que armazena a melhor posição para alocar o item $a$m, como esse ponto e pula para o Passo 2.(e);
+        \item Em caso positivo, define $M$, que armazena a melhor posição para alocar o item $a$, como esse ponto e pula para o Passo 2.(e);
         \item Caso contrário:
         \begin{enumerate}
             \item Define $M = (g,0)$, em que $g$ é um valor suficientemente grande para que não seja alcançado durante a alocação (calculado, por exemplo, somando o comprimento de todos os itens a serem alocados);
@@ -495,20 +566,18 @@ Em relação ao sentido da ordenação existem duas opções: $1$ ordena o índi
     \end{enumerate}
 \end{enumerate}
 
-%Conforme cada ponto é calculado, sua validade só será averiguada se for mais à esquerda (ou tão à esquerda quanto e mais abaixo) que o último ponto dado como válido.
-
 Por fim o programa imprime um arquivo em Latex utilizando a ferramenta {\it Tikz} do leiaute correspondente, em que o recipiente é representado em azul, o comprimento obtido é a linha vertical pontilhada e os itens são coloridos (itens não convexos são representados por suas partes convexas conectadas, de mesma cor). Imprime também as informações de comprimento mínimo alcançado e tempo de execução num único arquivo de texto para facilitar sua disposição em forma de tabela (como a da Seção \ref{sec:experimentosbl}).
 
 
 \subsection{Experimentos numéricos} \label{sec:experimentosbl}
 
 
-Para avaliar a implementação em linguagem C, executamos a heurística {\it Bottom-Left} com todas as combinações de método e sentido de ordenação apresentadas na Seção~\ref{sec:BL}, totalizando doze variantes, denominadas $BL_{MS}$, em que $M$ representa o método e $S$ o sentido da ordenação. As variações foram aplicadas em vinte e nove instâncias clássicas da literatura\footnote{\url{https://www.euro-online.org/websites/esicup/data-sets}, acessado em 20/02/2025.}, as presentes nas tabelas~\ref{tab:t1} e~\ref{tab:t2}.
+Para avaliar a implementação em linguagem C, executamos a heurística {\it Bottom-Left} com todas as combinações de método e sentido de ordenação apresentadas na Seção~\ref{sec:BL}, totalizando doze variantes, denominadas $BL_{MS}$, em que $M$ representa o método e $S$ o sentido da ordenação. As variações foram aplicadas em vinte e nove instâncias clássicas da literatura\footnote{\url{https://github.com/ESICUP/datasets}, acessado em 08/11/2026.}, as presentes nas Tabelas~\ref{tab:t1} e~\ref{tab:t2}.
 
-Os experimentos foram executados em um computador de 8GB de memória RAM, processador Intel® Core™ i5-8250U e Sistema Operacional Ubuntu 24.04.2 LTS. Tanto o código em C quanto os arquivos base das instâncias e todos os leiautes obtidos ao longo deste trabalho de Iniciação Científica podem ser acessados em \url{https://sites.icmc.usp.br/andretta/pinheiro-2025/}.
+Os experimentos foram executados em um computador de 8GB de memória RAM, processador Intel® Core™ i5-8250U e Sistema Operacional Ubuntu 24.04.2 LTS. Tanto o código em C quanto os arquivos base das instâncias e todos os leiautes obtidos ao longo do segundo projeto de Iniciação Científica podem ser acessados em \url{https://sites.icmc.usp.br/andretta/pinheiro-2025/}.
 
 
-Os resultados obtidos foram divididos em duas tabelas~\ref{tab:t1} e~\ref{tab:t2}. A coluna ``Instância'' apresenta o nome de cada instância utilizada, enquanto ``Itens'' retrata o número de itens da instância, incluindo todas cópias demandadas. Em seguida, cada grupo de duas colunas representa o resultado da execução de uma combinação $BL_{MS}$, em que $M = \{1, 2, \dots, 6\}$ e $S = \{1, 2\}$. A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística $BL_{MS}$ correspondente e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância. O valor em destaque em cada linha é o menor comprimento entre todos os resultados para aquela instância. Na Tabela~\ref{tab:t1}, temos as 6 variações da heurística que apresentaram as maiores quantidades de instâncias para as quais se obteve melhores comprimentos, ordenadas da que obteve maior quantidade de melhores resultados para a que obteve menor quantidade. Na Tabela~\ref{tab:t2} estão as variantes restantes da heurística.
+Os resultados obtidos foram divididos em duas Tabelas~\ref{tab:t1} e~\ref{tab:t2}. A coluna ``Instância'' apresenta o nome de cada instância utilizada, enquanto ``Itens'' retrata o número de itens da instância, incluindo todas cópias demandadas. Em seguida, cada grupo de duas colunas representa o resultado da execução de uma combinação $BL_{MS}$, em que $M = \{1, 2, \dots, 6\}$ e $S = \{1, 2\}$. A coluna ``Comp'' representa o comprimento obtido para a instância pela heurística $BL_{MS}$ correspondente e a coluna ``T(s)'' apresenta o tempo em segundos que a heurística levou para resolver cada instância. O valor em destaque em cada linha é o menor comprimento entre todos os resultados para aquela instância. Na Tabela~\ref{tab:t1}, temos as 6 variações da heurística que apresentaram as maiores quantidades de instâncias para as quais se obteve melhores comprimentos, ordenadas da que obteve maior quantidade de melhores resultados para a que obteve menor quantidade. Na Tabela~\ref{tab:t2} estão as variantes restantes da heurística.
 
 Como podemos observar na Tabela~\ref{tab:t1}, a ordenação dos itens de forma decrescente baseada no comprimento de cada um ($BL_{31}$) obteve o maior número de bons resultados (12 de 29 instâncias) e, assim como todas as variações, num tempo de execução muito pequeno para todas as instâncias. Para entender a disparidade existente entre as variações da heurística aplicadas a uma mesma instância, calculamos a razão entre o menor e o maior comprimento obtidos. Assim, observamos a maior diferença de valores na instância {\it dighe1}, com razão $0,710$, e a menor na instância {\it poly5A}, com razão $0,895$. Como nenhuma razão obtida resultou em $1$, variar o critério de ordenação para aplicar a heurística influenciou o comprimento final em todas as instâncias analisadas. Quando comparamos somente os resultados das heurísticas $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$, as quatro com melhores resultados, a classificação entre elas, de acordo com o número de instâncias em que obtiveram os menores comprimentos, permaneceu inalterada.
 
@@ -631,13 +700,13 @@ Os principais elementos desse algoritmo são:
         \item Existe um viés fixo $b$ que, para cada chave de $i$, indica qual a chance de que ela seja proveniente do pai elite, enquanto $1-b$ é a chance de que origine do não-elite.
     \end{itemize}
     \item A {\bf mutação}, processo de criação de novos indivíduos, a partir da geração de novas chaves aleatórias.
-    \item As {\bf gerações}, utilizadas criar uma nova população a partir da geração anterior, usando a elite, cruzamentos e mutações. 
+    \item As {\bf gerações}, utilizadas para criar uma nova população a partir da geração anterior, usando a elite, cruzamentos e mutações. 
 \end{itemize}
 
 Inicialmente, o algoritmo gera chaves dos $I$ indivíduos que compõem a população, ordena os cromossomos de cada indivíduo, geralmente em ordem crescente, e aplica a função {\it fitness}, obtendo o valor $f$ de cada um e a partir disso escolhendo os $E$ indivíduos da elite. Em seguida, é construída uma nova geração composta por essa elite, $M$ novos indivíduos gerados por mutação e $C$ outros gerados do cruzamento enviesado. Dessa forma, são construídas novas gerações até que seja atingida uma condição de parada, que nesse caso determinamos como o máximo de $G$ gerações.
 
   
-Nesse projeto, cada chave aleatória nos cromossomos foi associada a um item a ser alocado (ou seja, o total $m$ de chaves num cromossomo é o número total de itens da instância, incluindo suas cópias). Este vetor de chaves foi ordenado em ordem crescente, gerando uma ordenação para os itens. Então, a heurística {\it BL} foi aplicada a essa sequência, e o comprimento final da faixa foi utilizado como valort de {\it fitness} $f$ do indivíduo.
+Nesse projeto, cada chave aleatória nos cromossomos foi associada a um item a ser alocado (ou seja, o total $m$ de chaves num cromossomo é o número total de itens da instância, incluindo suas cópias). Este vetor de chaves foi ordenado em ordem crescente, gerando uma ordenação para os itens. Então, a heurística {\it BL} foi aplicada a essa sequência, e o comprimento final da faixa foi utilizado como valor de {\it fitness} $f$ do indivíduo.
 
 Para exemplificar como o {\it fitness} $f$ é calculado para cada indivíduo, considere uma instância cujos itens são um triângulo retângulo (item $A$), um quadrado (item $B$) e um triângulo equilátero (item $C$), como na Figura~\ref{fig:f14}. Considere também que foi criado um indivíduo $1$, em que foi gerada uma chave aleatória para cada um desses itens, presentes na mesma figura. Podemos ver então, na Figura~\ref{fig:f15a} como fica a sequência do cromossomo de $1$ após a ordenação dos itens e chaves em ordem crescente, e em~\ref{fig:f15b} sua alocação por meio da {\it BL} baseada nessa ordem. O comprimento usado nesta alocação é o valor de $f$ para o indivíduo $1$. O mesmo vale para um indivíduo $2$, representado pelas chaves na Figura~\ref{fig:f16a} e sua ordenação em~\ref{fig:f16b}.
 
@@ -665,7 +734,7 @@ Para exemplificar como o {\it fitness} $f$ é calculado para cada indivíduo, co
         \label{fig:f15b}
     \end{subfigure}
     \hfill
-    \caption{Indivíduo $1$ ordenado conforme as chaves em ordem crescente em \,(a)\, e e sua alocação com base na {\it BL} seguindo tal ordenação em \,(b)\,.}
+    \caption{Indivíduo $1$ ordenado conforme as chaves em ordem crescente em \,(a)\, e sua alocação com base na {\it BL} seguindo tal ordenação em \,(b)\,.}
     \label{fig:f15}
 \end{figure}
 
@@ -689,7 +758,7 @@ Para exemplificar como o {\it fitness} $f$ é calculado para cada indivíduo, co
     \label{fig:f16}
 \end{figure}
 
-Para exemplificar o cruzamento, usando o mesmo exemplo, o cromossomo de cada um dos pais é tomado em sua ordem original, antes da ordenação de chaves. Para cada item do novo indivíduo é sorteado de qual dos pais será herdada a chave correspondente. Observe na Figura~\ref{fig:f17} o descendente $3$ gerado pelo cruzamento entre $1$ e $2$ e em~\ref{fig:f18} como fica então sua ordenação. Perceba que, embora os valores não sejam os mesmos, sua ordenação é a mesma do indivíduo $2$, ou seja, nem sempre o cruzamento gera indivíduos diferentes.
+Para exemplificar o cruzamento, usando o mesmo exemplo, o cromossomo de cada um dos pais é tomado em sua ordem original, antes da ordenação de chaves. Para cada item do novo indivíduo é sorteado de qual dos pais será herdada a chave correspondente. Observe na Figura~\ref{fig:f17} o descendente $3$ gerado pelo cruzamento entre $1$ e $2$ e na Figura~\ref{fig:f18} como fica então sua ordenação. Perceba que, embora os valores não sejam os mesmos, sua ordenação é a mesma do indivíduo $2$, ou seja, nem sempre o cruzamento gera indivíduos diferentes.
 
 \begin{figure}[H]
     \centering
@@ -706,18 +775,16 @@ Para exemplificar o cruzamento, usando o mesmo exemplo, o cromossomo de cada um 
 \end{figure}
 
 
-Implementamos a {\it BRKGA} em linguagem C, com as mesmas especificações de leitura feitas para a implementação da {\it BL}, especificadas na Seção~\ref{sec:BL}.%, porém ao invés de um arquivo ``makefile'' utilizado para a execução, é utilizado um arquivo ``comando.sh'' onde cada linha é o comando de execução com a instância a ser rodada e 
-Os valores dos parâmetros $I$, $G$, $E$, $C$ e $b$ são passados para o programa no momento de sua execução. As estruturas de dados utilizada para armazenar os itens e {\it NFPs} também é a mesma apresentada na implementação da {\it BL}.
+Implementamos a {\it BRKGA} em linguagem C, com as mesmas especificações de leitura feitas para a implementação da {\it BL}, especificadas na Seção~\ref{sec:BL}. Os valores dos parâmetros $I$, $G$, $E$, $C$ e $b$ são passados para o programa no momento de sua execução. As estruturas de dados utilizadas para armazenar os itens e {\it NFPs} também são as mesmas apresentadas na implementação da {\it BL}.
 
 Em relação à estrutura de dados específica para o algoritmo genético, temos a população que armazena os valores referentes à quantidade de indivíduos $E$ da elite, $M$ da mutação e $C$ do cruzamento, o viés $b$ do cruzamento, $G$ da quantidade de gerações totais e $I$ total de indivíduos na população. Além disso, contém um ponteiro para o vetor que armazena os indivíduos ao longo das gerações e outro para um vetor auxiliar, utilizado para armazenar temporariamente os indivíduos provenientes do cruzamento antes de inserí-los na população.
 
 Cada indivíduo é composto pelo seu valor de {\it fitness}, um ponteiro para um vetor que armazena as chaves na ordem original de criação e um ponteiro para vetor dos itens, em que cada elemento armazena o número $x$ de um item e a chave $k$ associada a ele.
 
 Após a leitura dos dados, o programa passa pelas etapas a seguir:
-%que na primeira geração $4$ indivíduos tiveram chaves específicas provenientes de bons resultados para a aplicação na {\it BL}, e os outros $I - 4$ tiveram as chaves geradas aleatoriamente. As soluções em específico escolhidas para compor a população como esses $4$ indivíduos foram as melhores das $12$ composições de método-ordenação para a {\it BL} citadas em~\ref{sec:experimentosbl}, dadas pela $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$.
 
 \begin{enumerate}
-    \item Constrói a primeira geração de $I$ indivíduos, sendo que $4$ indivíduos tem suas chaves selecionadas a partir das melhores ordenações para a {\it BL} (aquelas citadas na Seção~\ref{sec:experimentosbl}, dadas pela $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$), enquanto os outros $I-4$ tem as chaves geradas aleatoriamente;
+    \item Constrói a primeira geração de $I$ indivíduos, sendo que $4$ indivíduos têm suas chaves selecionadas a partir das melhores ordenações para a {\it BL} (aquelas citadas na Seção~\ref{sec:experimentosbl}, dadas pela $BL_{31}$, $BL_{21}$, $BL_{52}$ e $BL_{11}$), enquanto os outros $I-4$ têm as chaves geradas aleatoriamente;
     \item Para cada indivíduo $i$, $i = 1, \dots, I$:
     \begin{enumerate}
         \item Ordena o cromossomo de $i$;
@@ -737,14 +804,14 @@ Após a leitura dos dados, o programa passa pelas etapas a seguir:
     \end{enumerate}
 \end{enumerate}
 
-Por fim, o programa identifica o indivíduo com melhor valor de {\it fitness} e gera, em um arquivo Latex, o leiaute correspontende usando a ferramenta {\it Tikz}, em que o recipiente é representado em azul, o comprimento obtido é a linha vertical pontilhada e os itens são coloridos (itens não convexos são representados por suas partes convexas conectadas, de mesma cor). Imprime também as informações de comprimento mínimo alcançado e tempo de execução num único arquivo de texto para facilitar sua disposição em forma de tabela (como a da Seção \ref{sec:experimentosbl}).
+Por fim, o programa identifica o indivíduo com melhor valor de {\it fitness} e gera, em um arquivo Latex, o leiaute correspondente usando a ferramenta {\it Tikz}, em que o recipiente é representado em azul, o comprimento obtido é a linha vertical pontilhada e os itens são coloridos (itens não convexos são representados por suas partes convexas conectadas, de mesma cor). Imprime também as informações de comprimento mínimo alcançado e tempo de execução num único arquivo de texto para facilitar sua disposição em forma de tabela (como a da Seção \ref{sec:experimentosbl}).
 
 
 \subsection{Experimentos numéricos} \label{sec:experimentosBRKGA}
 
-A meta-heurística {\it BRKGA} utilizou como parâmetros $I = 100$, $E = 20$, $M = 10$, $C = 70$ e $G = 10$. Para cada instância foram realizadas duas execuções, uma com viés $b = 0,7$ e outra com $b = 0,5$. Os experimentos utilizaram as mesmas vinte e nove instâncias clássicas da literatura\footnote{\url{https://github.com/ESICUP/datasets}, acessado em 08/11/2026.} apresentadas na Seção~\ref{sec:experimentosbl} e realizados no mesmo computador descrito naquela seção.
+A meta-heurística {\it BRKGA} utilizou como parâmetros $I = 100$, $E = 20$, $M = 10$, $C = 70$ e $G = 10$. Para cada instância foram realizadas duas execuções, uma com viés $b = 0,7$ e outra com $b = 0,5$. Os experimentos utilizaram as mesmas vinte e nove instâncias clássicas da literatura apresentadas na Seção~\ref{sec:experimentosbl} e foram realizados no mesmo computador descrito naquela seção.
 
-Os resultados obtidos se encontram na Tabela~\ref{tab:t3}. A coluna ``Instância'' apresenta o nome de cada instância utilizada, enquanto a coluna ``Itens'' informa o número total de itens da instância, incluindo suas cópias. Em seguida, os grupos de duas colunas apresentam os resultado das execuções da {\it BRKGA}, respectivamente com vieses de $0,5$ e $0,7$. A coluna ``Comp'' apresenta o comprimento obtido pela {\it BRKGA} para cada instância, destacando em cada linha o menor dos dois resultados. A coluna ``T(s)'' apresenta o tempo em segundos de cada execução.
+Os resultados obtidos se encontram na Tabela~\ref{tab:t3}. A coluna ``Instância'' apresenta o nome de cada instância utilizada, enquanto a coluna ``Itens'' informa o número total de itens da instância, incluindo suas cópias. Em seguida, os grupos de duas colunas apresentam os resultados das execuções da {\it BRKGA}, respectivamente com vieses de $0,5$ e $0,7$. A coluna ``Comp'' apresenta o comprimento obtido pela {\it BRKGA} para cada instância, destacando em cada linha o menor dos dois resultados. A coluna ``T(s)'' apresenta o tempo em segundos de cada execução.
 
 
 \begin{adjustwidth}{-2 cm}{-2,5 cm}\centering\begin{threeparttable}[!htb]
@@ -793,14 +860,16 @@ Os resultados obtidos se encontram na Tabela~\ref{tab:t3}. A coluna ``Instância
 \vspace{15pt}
 
 
-Os resultados indicam que o viés de $0,7$ no cruzamento favoreceu resultados melhores. Esse viés aumenta a probabilidade de qie cada chave do novo cromossomo seja herdada do indivíduo pertencente à elite. Isso se reflete nas tabelas: o viés $0,7$ obteve o menor comprimento em 16 das 29 instâncias, enquanto o do viés $0,5$ obteve o menor comprimento em 8 instâncias Nas outras 5 os dois produziram resultados iguais.
+Os resultados indicam que o viés de $0,7$ no cruzamento favoreceu resultados melhores. Esse viés aumenta a probabilidade de que cada chave do novo cromossomo seja herdada do indivíduo pertencente à elite. Isso se reflete na Tabela~\ref{tab:t3}: o viés $0,7$ obteve o menor comprimento em 16 das 29 instâncias, enquanto o do viés $0,5$ obteve o menor comprimento em 8 instâncias. Nas outras 5 os dois produziram resultados iguais.
 
 
 \section{Comparação entre métodos utilizados} \label{sec:comp}
 
 A Tabela~\ref{tab:t4} apresenta uma comparação entre os dois resultados da {\it BRKGA} e os resultados das quatro melhores variantes da {\it BL}. A coluna ``Instância'' contém o nome de cada instância utilizada, a ``Itens'' retrata o número de itens da instância (incluindo as cópias de cada item). Em seguida, cada grupo de duas colunas apresenta os resultado de uma das variantes da heurística identificada no cabeçalho da tabela. A coluna ``Comp'' apresenta o comprimento obtido pela heurística correspondente, destacando em cada linha o menor resultado entre os métodos comparados. A coluna ``T(s)'' apresenta o tempo de execução em segundos de cada método para a respectiva instância.
 
-Considerando o melhor resultado entre as duas execuções da {\it BRKGA}, observamos que seu comprimento final foi inferior que o obtido por todas as doze variações da {\it BL} em 28 das 29 instâncias. A única instância em que a {\it BRKGA} não obteve um comprimento inferior ao melhor resultado da {\it BL} foi a {\it three}, cuja solução $6,20$ já tinha sido obtida pela $BL_{12}$. Considerando apenas a execução com viés de $0,5$, a {\it BRKGA} igualou o melhor resultado da {\it BL} nas instâncias {\it blaze1}, {\it poly3b} e {\it poly4b}. Entretanto, apesar de produzir soluções melhores em grande parte das instâncias, a diferença entre os comprimentos obtidos é pequena, o tempo de execução da {\it BRKGA} é em média mais de mil vezes maior que os da {\it BL} e apresenta um custo computacional significativamente maior. É necessário considerar tais fatores ao escolher qual método aplicar em cada caso.
+Considerando o melhor resultado entre as duas execuções da {\it BRKGA}, observamos que seu comprimento final foi inferior ao obtido por todas as doze variações da {\it BL} em 28 das 29 instâncias. A única instância em que a {\it BRKGA} não obteve um comprimento inferior ao melhor resultado da {\it BL} foi a {\it three}, cuja solução $6,20$ já tinha sido obtida pela $BL_{12}$. Considerando apenas a execução com viés de $0,5$, a {\it BRKGA} igualou o melhor resultado da {\it BL} nas instâncias {\it blaze1}, {\it poly3b} e {\it poly4b}. 
+
+A {\it BRKGA} reduziu o comprimento em média $4,4\%$ em relação ao melhor resultado das doze variantes da {\it BL}, com ganhos de até $14,0\%$ nas 28 instâncias em que a superou. Entretanto, apesar de produzir soluções melhores em quase todas as instâncias, o fez com um tempo de execução em média mais de mil vezes maior. É necessário considerar tais fatores ao escolher qual método aplicar em cada caso.
 
 
 \begin{adjustwidth}{-2.5 cm}{-2.5 cm}\centering\begin{threeparttable}[!htb]
@@ -808,7 +877,7 @@ Considerando o melhor resultado entre as duas execuções da {\it BRKGA}, observ
     \caption{Resultados obtidos pelas duas variações da $BRKGA$ e os quatro melhores da $BL$.}
     \scriptsize{
     \begin{tabular}{|l|c|rr|rr|rr|rr|rr|rr|}\hline
-        \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} &\multicolumn{2}{c|}{$BRKGA$ - viés $0.5$} &\multicolumn{2}{c|}{$BRKGA$ - viés $0.7$} &\multicolumn{2}{c|}{$BL_{31}$} &\multicolumn{2}{c|}{$BL_{21}$} &\multicolumn{2}{c|}{$BL_{52}$} &\multicolumn{2}{c|}{$BL_{11}$} \\
+        \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{} &\multicolumn{2}{c|}{$BRKGA$ - viés $0,5$} &\multicolumn{2}{c|}{$BRKGA$ - viés $0,7$} &\multicolumn{2}{c|}{$BL_{31}$} &\multicolumn{2}{c|}{$BL_{21}$} &\multicolumn{2}{c|}{$BL_{52}$} &\multicolumn{2}{c|}{$BL_{11}$} \\
         Instância & Itens &Comp &T (s) &Comp &T (s) &Comp &T (s) &Comp &T (s) &Comp &T (s) &Comp &T (s) \\\hline
         albano &24 &\lgray10768,74 &674,09 &10878,59 &637,40 &11376,46 &0,42 &11818,58 &0,29 &13525,12 &0,36 &11818,58 &0,37 \\
         blaze1 &28 &28,67 &405,20 &\lgray27,87 &402,13 &28,67 &0,22 &31,20 &0,20 &34,34 &0,21 &30,35 &0,28 \\
@@ -848,9 +917,9 @@ Considerando o melhor resultado entre as duas execuções da {\it BRKGA}, observ
 \vspace{15pt}
 
 
-Observe nas figuras~\ref{fig:f11},~\ref{fig:f12} e~\ref{fig:extra}, os leiautes obtidos na melhor e na pior alocação para a instância {\it fu} pela {\it BL}, e a alocação desta obtida pela {\it BRKGA}, respectivamente. Já as figuras~\ref{fig:f13} e~\ref{fig:f20} apresentam as melhores alocações obtidas pela {\it BL} e pela {\it BRKGA}, respectivamente, para a instância {\it blaze1}. Os comprimentos finais correspondentes estão indicados nas legendas.
+Observe nas Figuras~\ref{fig:f11},~\ref{fig:f12} e~\ref{fig:extra}, os leiautes obtidos na melhor e na pior alocação para a instância {\it fu} pela {\it BL}, e a alocação desta obtida pela {\it BRKGA}, respectivamente. Já as Figuras~\ref{fig:f13} e~\ref{fig:f20} apresentam as melhores alocações obtidas pela {\it BL} e pela {\it BRKGA}, respectivamente, para a instância {\it blaze1}. Os comprimentos finais correspondentes estão indicados nas legendas.
 
-O exemplo apresentado na Figura~\ref{fig:f1}, naSeção~\ref{sec:irregular}, corresponde ao pior leiaute obtido para a instância {\it blaze1}, com comprimento final 36,92 e ordenação dos itens baseada na heurística $BL_{32}$, que os ordena de forma crescente de comprimento.
+O exemplo apresentado na Figura~\ref{fig:f1}, na Seção~\ref{sec:irregular}, corresponde ao pior leiaute obtido para a instância {\it blaze1}, com comprimento final 36,92 e ordenação dos itens baseada na heurística $BL_{32}$, que os ordena de forma crescente de comprimento.
 
 
 \begin{figure}[H]
@@ -1328,17 +1397,17 @@ O exemplo apresentado na Figura~\ref{fig:f1}, naSeção~\ref{sec:irregular}, cor
 
 \section{Considerações Finais} \label{sec:cons_finais}
 
-Este trabalo reuniu os restultados de dois projetos de Iniciação Científica. O primeiro consistiu em estudar otimização linear, nos casos contínuo e inteiro, focando na modelagem. Estudamos a partir de~\cite{arenales} a modelagem de um problema de corte unidimensional e um de corte bidimensional, com itens retangulares, estabelecendo uma base para compreender o problema de corte de itens irregulares em faixa. Para tal problema, foi necessário estudar técnicas para verificar a sobreposição de itens,particularmente, o {\it No-Fit Polygon}, e implementamos, em linguagem C, a heurística construtiva {\it Bottom-Left} para polígonos convexos. 
+Este trabalho reuniu os resultados de dois projetos de Iniciação Científica. O primeiro consistiu em estudar otimização linear, nos casos contínuo e inteiro, focando na modelagem. Estudamos a partir de~\cite{arenales} a modelagem de um problema de corte unidimensional e um de corte bidimensional, com itens retangulares, estabelecendo uma base para compreender o problema de corte de itens irregulares em faixa. Para tal problema, foi necessário estudar técnicas para verificar a sobreposição de itens (particularmente, o {\it No-Fit Polygon}), e implementamos, em linguagem C, a heurística construtiva {\it Bottom-Left} para polígonos convexos. 
 
-Avaliamos ser mais interessante desenvolver o código em C, aprendendo a linguagem e alguns detalhes de implementação, ao invés de utilizar um {\it solver} para resolver uma formulação matemática do problema. Os experimentos numéricos, realizados em um conjunto inicial de instâncias clássicas da literatura, mostraram que a heurística foi capaz de encontrar boas soluções em um tempo de execução reduzidos.
+Avaliamos ser mais interessante desenvolver o código em C, aprendendo a linguagem e alguns detalhes de implementação, ao invés de utilizar um {\it solver} para resolver uma formulação matemática do problema. Os experimentos numéricos, realizados em um conjunto inicial de instâncias clássicas da literatura, mostraram que a heurística foi capaz de encontrar boas soluções em um tempo de execução reduzido.
 
 No segundo projeto, ampliamos esse estudo ao estender a implementação da heurística {\it Bottom-Left} para tratar polígonos convexos e não convexos e ao considerar doze combinações diferentes de ordenação dos itens. Os experimentos numéricos da $BL$, realizados em vinte e nove instâncias clássicas da literatura, mostraram que a qualidade das soluções depende significativamente da ordenação dos itens, sendo as $BL_{31}$ e $BL_{21}$ as duas que obtiveram melhores resultados, com tempo de execução reduzido.
 
 Em seguida, implementamos a meta-heurística {\it BRKGA}, utilizando dois vieses diferentes nessas mesmas instâncias. Os experimentos mostraram melhores soluções, como o esperado: considerando a melhor entre as duas execuções, a {\it BRKGA} obteve comprimento menor que o de todas as variações da {\it BL} em 28 das 29 instâncias, e o viés $0,7$ foi o que obteve o menor comprimento no maior número de instâncias. Entretanto, a {\it BRKGA} apresentou custo computacional significativamente superior ao da {\it BL}, o que pode limitar sua aplicação quando o tempo de execução é um fator importante.
 
-Como possibilidade de trabalhos futuros, destacamos a melhoria da implementação, inclusão de possibilidade de rotação dos itens e realização de mais experimentos com outras instâncias, buscando melhorar o desempenho da {\it BRKGA}.
+De modo geral, o percurso deste trabalho reflete a proposta do Bacharelado em Matemática Aplicada e Computação Científica, que une a formação matemática à computacional para resolver problemas de aplicações reais. Conhecimentos de programação permitiram a implementação e avaliação das heurísticas propostas, enquanto a base teórica em modelagem matemática e otimização foi essencial para a formulação dos problemas de corte. Assim, a pesquisa permitiu integrar, em um único problema, conhecimentos de diferentes disciplinas do curso, como os citados na Introdução.
 
-Ao longo da graduação foram estudados diversos conceitos que contribuíram integralmente para o desenvolvimento desta pesquisa. Conhecimentos de programação permitiram a implementação e avaliação das heurísticas propostas, enquanto a base teórica em modelagem matemática e otimização foram essenciais para a formulação dos problemas de corte.
+Como possibilidade de trabalhos futuros, destacamos a melhoria da implementação, inclusão da possibilidade de rotação dos itens e realização de mais experimentos com outras instâncias, buscando melhorar o desempenho da {\it BRKGA}.
 
 
 \printbibliography
